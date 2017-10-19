@@ -439,7 +439,7 @@
 				CODE_SIGN_ENTITLEMENTS = OpenSCToken/opensctoken.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = OpenSCToken/Info.plist;
-				INSTALL_PATH = "$(DSTROOT)/System/Library/Frameworks/CryptoTokenKit.framework/PlugIns/";
+				INSTALL_PATH = /System/Library/Frameworks/CryptoTokenKit.framework/PlugIns/;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.opensc-project.mac.opensctoken.OpenSCTokenApp.OpenSCToken";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -453,7 +453,7 @@
 				CODE_SIGN_ENTITLEMENTS = OpenSCToken/opensctoken.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = OpenSCToken/Info.plist;
-				INSTALL_PATH = "$(DSTROOT)/System/Library/Frameworks/CryptoTokenKit.framework/PlugIns/";
+				INSTALL_PATH = /System/Library/Frameworks/CryptoTokenKit.framework/PlugIns/;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.opensc-project.mac.opensctoken.OpenSCTokenApp.OpenSCToken";
 				PRODUCT_NAME = "$(TARGET_NAME)";
