@@ -16,9 +16,9 @@
  * You should have received a copy of the GNU General Public License along with
  * pcsc-relay.  If not, see <http://www.gnu.org/licenses/>.
  */
-#import <Foundation/Foundation.h>
-#import <CryptoTokenKit/CryptoTokenKit.h>
-#import <CryptoTokenKit/TKSmartCardToken.h>
+@import Foundation;
+@import CryptoTokenKit;
+@import CryptoTokenKit.TKSmartCardToken;
 
 #include "libopensc/pkcs15.h"
 

@@ -249,7 +249,7 @@ static BOOL OpenSCAuthOperationFinishWithError(OpenSCTokenSession *session, NSDa
         statusToError(r, error);
         return nil;
     }
-    [out setLength:r];
+    [out setLength:(size_t) r];
     
     return out;
 }
@@ -263,12 +263,12 @@ static BOOL OpenSCAuthOperationFinishWithError(OpenSCTokenSession *session, NSDa
 	unsigned char decrypted[512]; /* FIXME: Will not work for keys above 4096 bits */
 	int r = sc_pkcs15_decipher(self.OpenSCToken.p15card, prkey_obj, algorithmToFlags(algorithm),
 			[ciphertext bytes], [ciphertext length], decrypted, sizeof(decrypted));
-    if (r < 0) {
+    if (0 > r) {
         statusToError(r, error);
         return nil;
     }
 
-    return [NSData dataWithBytes:decrypted length:r];
+    return [NSData dataWithBytes:decrypted length:(size_t) r];
 }
 
 - (NSData *)tokenSession:(TKTokenSession *)session performKeyExchangeWithPublicKey:(NSData *)otherPartyPublicKeyData usingKey:(TKTokenObjectID)keyObjectID algorithm:(TKTokenKeyAlgorithm *)algorithm parameters:(TKTokenKeyExchangeParameters *)parameters error:(NSError * _Nullable __autoreleasing *)error {

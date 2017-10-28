@@ -16,9 +16,9 @@
  * You should have received a copy of the GNU General Public License along with
  * pcsc-relay.  If not, see <http://www.gnu.org/licenses/>.
  */
-#import <os/log.h>
-#import <Foundation/Foundation.h>
-#import <CryptoTokenKit/CryptoTokenKit.h>
+@import os.log;
+@import Foundation;
+@import CryptoTokenKit;
 
 #include "libopensc/log.h"
 #include "libopensc/pkcs15.h"
@@ -46,7 +46,7 @@
 #define USAGE_ANY_DECIPHER  (SC_PKCS15_PRKEY_USAGE_DECRYPT | SC_PKCS15_PRKEY_USAGE_UNWRAP)
 #define USAGE_ANY_AGREEMENT (SC_PKCS15_PRKEY_USAGE_DERIVE)
 
-- (nullable instancetype)initWithSmartCard:(TKSmartCard *)smartCard AID:(nullable NSData *)AID OpenSCDriver:(OpenSCTokenDriver *)tokenDriver error:(NSError **)error {
+- (nullable instancetype)initWithSmartCard:(TKSmartCard *)smartCard AID:(nullable NSData *)AID OpenSCDriver:(OpenSCTokenDriver *)tokenDriver error:(NSError * _Nullable __autoreleasing *)error {
     
     sc_context_param_t ctx_param;
     sc_context_t *ctx = NULL;
@@ -90,7 +90,7 @@
     
     r = sc_pkcs15_get_objects(p15card, SC_PKCS15_TYPE_CERT_X509, objs, sizeof(objs)/(sizeof *objs));
     LOG_TEST_GOTO_ERR(ctx, r, "sc_pkcs15_get_objects (SC_PKCS15_TYPE_CERT_X509)");
-    cert_num = r;
+    cert_num = (size_t) r;
     items = [NSMutableArray arrayWithCapacity:cert_num];
     for (i = 0; i < cert_num; i++) {
         struct sc_pkcs15_cert_info *cert_info = objs[i]->data;
