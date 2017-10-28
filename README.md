@@ -41,20 +41,32 @@ Tested Mechanisms:
 - [ ] `kSecKeyAlgorithmRSAEncryptionRaw`
 - [ ] `kSecKeyAlgorithmRSAEncryptionPKCS1`
 
-## Requirements
+## Build OpenSCToken
 
-Needs OpenSC installed and compiled with CryptoTokenKit:
+### Requirements
 
-```
-./configure --disable-pcsc  --enable-cryptotokenkit
-```
+- OpenSC installed and compiled with CryptoTokenKit
+- Xcode 8.0 or later; macOS 10.12 SDK or later
 
 ### Build
 
-Xcode 8.0 or later; iOS 10.0 SDK or later
+```
+# Build basic version of OpenSC with CryptoTokenKit
+git clone https://github.com/OpenSC/OpenSC.git
+cd OpenSC
+./bootstrap
+# We disable dependencies here, but at some point we should integrate with `../MacOSX/build`, which builds all of them
+./configure --disable-pcsc  --enable-cryptotokenkit \
+    --disable-openssl --disable-readline --disable-zlib --prefix=/Library/OpenSC
+make install DESTDIR=${PWD}/target
+
+# Now build OpenSCToken
+git clone http://github.com/frankmorgner/OpenSCToken.git
+xcodebuild -target OpenSCToken -configuration Deployment -project OpenSCToken/OpenSCTokenApp.xcodeproj install DSTROOT=${PWD}/target
+```
 
 ### Runtime
 
-iOS 10.0 or later
+macOS 10.12 or later
 
 Copyright (C) 2017 Frank Morgner <frankmorgner@gmail.com>
