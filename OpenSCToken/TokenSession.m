@@ -96,8 +96,6 @@ static BOOL OpenSCAuthOperationFinishWithError(OpenSCTokenSession *session, NSDa
     if (PIN) {
         pin = [PIN UTF8String];
         pin_len = strlen(pin);
-    } else {
-        sleep(10);
     }
     if (SC_SUCCESS != sc_pkcs15_verify_pin(session.OpenSCToken.p15card, pin_obj, (const unsigned char *) pin, pin_len))
         return NO;
