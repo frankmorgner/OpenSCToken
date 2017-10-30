@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		194B959F1ED77D4D004A510D /* libopensc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 194B959E1ED77D4D004A510D /* libopensc.dylib */; };
+		191FFFCE1FA7204B009E9DC4 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 191FFFCD1FA7204B009E9DC4 /* libz.tbd */; };
 		2F38839D1CF46C6E00F114A7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F38839C1CF46C6E00F114A7 /* AppDelegate.m */; };
 		2F3883A01CF46C6E00F114A7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F38839F1CF46C6E00F114A7 /* main.m */; };
 		2F3883A21CF46C6E00F114A7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F3883A11CF46C6E00F114A7 /* Assets.xcassets */; };
@@ -44,7 +44,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		194B959E1ED77D4D004A510D /* libopensc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libopensc.dylib; path = /usr/local/lib/libopensc.dylib; sourceTree = "<group>"; };
+		191FFFCD1FA7204B009E9DC4 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		2F3883981CF46C6E00F114A7 /* OpenSCTokenApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenSCTokenApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F38839B1CF46C6E00F114A7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		2F38839C1CF46C6E00F114A7 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -76,8 +76,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				194B959F1ED77D4D004A510D /* libopensc.dylib in Frameworks */,
 				2F3883B31CF46C9D00F114A7 /* Cocoa.framework in Frameworks */,
+				191FFFCE1FA7204B009E9DC4 /* libz.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -128,7 +128,7 @@
 		2F3883B11CF46C9D00F114A7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				194B959E1ED77D4D004A510D /* libopensc.dylib */,
+				191FFFCD1FA7204B009E9DC4 /* libz.tbd */,
 				2F3883B21CF46C9D00F114A7 /* Cocoa.framework */,
 			);
 			name = Frameworks;
@@ -365,10 +365,14 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = $SRCROOT/../src;
-				LIBRARY_SEARCH_PATHS = $SRCROOT/../target/Library/OpenSC/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = (
+					$SRCROOT/../src/libopensc/.libs/libopensc.a,
+					$SRCROOT/../openpace_bin/Library/OpenSC/lib/libeac.a,
+					$SRCROOT/../openssl_bin/Library/OpenSC/lib/libcrypto.a,
+				);
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -428,9 +432,13 @@
 				GCC_WARN_UNUSED_LABEL = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = $SRCROOT/../src;
-				LIBRARY_SEARCH_PATHS = $SRCROOT/../target/Library/OpenSC/lib;
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				OTHER_LDFLAGS = (
+					$SRCROOT/../src/libopensc/.libs/libopensc.a,
+					$SRCROOT/../openpace_bin/Library/OpenSC/lib/libeac.a,
+					$SRCROOT/../openssl_bin/Library/OpenSC/lib/libcrypto.a,
+				);
 				SDKROOT = macosx;
 			};
 			name = Release;
