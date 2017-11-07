@@ -54,7 +54,7 @@
 		2F3883A61CF46C6F00F114A7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		2F3883B01CF46C9D00F114A7 /* OpenSCToken.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = OpenSCToken.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F3883B21CF46C9D00F114A7 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
-		2F3883B61CF46C9D00F114A7 /* PIVToken.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PIVToken.entitlements; sourceTree = "<group>"; };
+		2F3883B61CF46C9D00F114A7 /* opensctoken.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = opensctoken.entitlements; sourceTree = "<group>"; };
 		2F3883B71CF46C9D00F114A7 /* Token.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Token.h; sourceTree = "<group>"; };
 		2F3883B81CF46C9D00F114A7 /* Token.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Token.m; sourceTree = "<group>"; };
 		2F3883BA1CF46C9D00F114A7 /* TokenDriver.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TokenDriver.m; sourceTree = "<group>"; };
@@ -152,7 +152,7 @@
 		2F3883B51CF46C9D00F114A7 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				2F3883B61CF46C9D00F114A7 /* PIVToken.entitlements */,
+				2F3883B61CF46C9D00F114A7 /* opensctoken.entitlements */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
