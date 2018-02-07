@@ -7,6 +7,7 @@ For further information about CryptoTokenKit please read the following ressource
 - [`man 8 security`](http://www.manpagez.com/man/1/security/)
 - [`man 8 sc_auth`](http://www.manpagez.com/man/8/sc_auth/)
 - [`man 8 SmartCardServices`](http://www.manpagez.com/man/7/SmartCardServices/)
+- [Use Mandatory Smart Card Authentication](https://support.apple.com/en-us/HT208372)
 - [*Working with Smart Cards: macOS and Security*](http://www.macad.uk/presentations/Richard_Purves_SC.pdf)
 
 OpenSCToken aims at providing the existing functionality of OpenSC through CryptoTokenKit.
@@ -25,6 +26,7 @@ Requirements:
 
 - OpenSC installed and compiled with CryptoTokenKit
 - Xcode 8.0 or later; macOS 10.12 SDK or later
+- Code signing credentials
 
 ```
 # Build basic version of OpenSC with CryptoTokenKit
