@@ -146,11 +146,6 @@ static BOOL OpenSCAuthOperationFinishWithError(OpenSCTokenSession *session, NSDa
 - (instancetype)initWithToken:(OpenSCToken *)token {
     if (self = [super initWithToken:token]) {
         _OpenSCToken = token;
-#if 0
-        // avoid locking
-        if (_OpenSCToken.card)
-            _OpenSCToken.card->lock_count++;
-#endif
     }
     return self;
 }
