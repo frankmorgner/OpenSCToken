@@ -96,6 +96,7 @@
         struct sc_pkcs15_cert_info *cert_info = objs[i]->data;
         struct sc_pkcs15_cert *cert = NULL;
         struct sc_pkcs15_object *prkey_obj = NULL;
+
         r = sc_pkcs15_read_certificate(p15card, cert_info, &cert);
         if (r) {
             sc_log(ctx, "sc_pkcs15_read_certificate: %s", sc_strerror(r));
@@ -117,7 +118,7 @@
         [certificateItem setName:certificateName];
         [items addObject:certificateItem];
         sc_pkcs15_free_certificate(cert);
-        
+
         // Create key item.
         r = sc_pkcs15_find_prkey_by_id(p15card, &cert_info->id, &prkey_obj);
         if (r) {
@@ -142,29 +143,29 @@
             /* Any other property list compatible value defined by the implementation of the token extension. Any such constraint is required to stay constant for the entire lifetime of the token. */
             constraint = [NSData dataWithBytes:(const void *)prkey_obj->auth_id.value length:prkey_obj->auth_id.len];
         }
-        
+
         if (USAGE_ANY_SIGN & prkey_info->usage) {
-            keyItem.canSign = TRUE;
+            keyItem.canSign = YES;
             constraints[@(TKTokenOperationSignData)] = constraint;
         } else {
-            keyItem.canSign = FALSE;
+            keyItem.canSign = NO;
         }
         keyItem.suitableForLogin = keyItem.canSign;
         
         if (USAGE_ANY_DECIPHER & prkey_info->usage) {
-            keyItem.canDecrypt = TRUE;
+            keyItem.canDecrypt = YES;
             constraints[@(TKTokenOperationDecryptData)] = constraint;
         } else {
-            keyItem.canDecrypt = FALSE;
+            keyItem.canDecrypt = NO;
         }
         
         if (USAGE_ANY_AGREEMENT & prkey_info->usage) {
-            keyItem.canPerformKeyExchange = TRUE;
+            keyItem.canPerformKeyExchange = YES;
             constraints[@(TKTokenOperationPerformKeyExchange)] = constraint;
         } else {
-            keyItem.canPerformKeyExchange = FALSE;
+            keyItem.canPerformKeyExchange = NO;
         }
-        
+
         keyItem.constraints = constraints;
         [items addObject:keyItem];
     }
@@ -196,6 +197,9 @@ err:
     sc_pkcs15_card_free(self.p15card);
     sc_disconnect_card(self.card);
     sc_release_context(self.ctx);
+    self.card = NULL;
+    self.p15card = NULL;
+    self.ctx = NULL;
 }
 
 
