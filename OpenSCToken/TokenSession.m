@@ -88,8 +88,8 @@ static BOOL OpenSCAuthOperationFinishWithError(OpenSCTokenSession *session, NSDa
     
     struct sc_pkcs15_object *pin_obj = NULL;
     struct sc_pkcs15_id p15id = dataToId(authID);
-    if (SC_SUCCESS != sc_pkcs15_find_pin_by_auth_id(session.OpenSCToken.p15card, &p15id, &pin_obj))
-        return NO;
+    int r = sc_pkcs15_find_pin_by_auth_id(session.OpenSCToken.p15card, &p15id, &pin_obj);
+    LOG_TEST_GOTO_ERR(session.OpenSCToken.ctx, r, "Could not find PIN object");
     
     const char *pin = NULL;
     size_t pin_len = 0;
@@ -97,12 +97,16 @@ static BOOL OpenSCAuthOperationFinishWithError(OpenSCTokenSession *session, NSDa
         pin = [PIN UTF8String];
         pin_len = strlen(pin);
     }
-    if (SC_SUCCESS != sc_pkcs15_verify_pin(session.OpenSCToken.p15card, pin_obj, (const unsigned char *) pin, pin_len))
-        return NO;
+    r = sc_pkcs15_verify_pin(session.OpenSCToken.p15card, pin_obj, (const unsigned char *) pin, pin_len);
     
+err:
+    if (SC_SUCCESS != r) {
+        os_log_error(OS_LOG_DEFAULT, "Could not verify PIN %s", sc_strerror(r));
+        return NO;
+    }
     // Mark card session sensitive, because we entered PIN into it and no session should access it in this state.
     session.smartCard.sensitive = YES;
-    
+
     return YES;
 }
 

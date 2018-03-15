@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		190ED4352059F2A50090562B /* opensc.conf in Resources */ = {isa = PBXBuildFile; fileRef = 190ED4342059F2A50090562B /* opensc.conf */; };
+		190ED4372059F3200090562B /* DESRCACC100001 in Resources */ = {isa = PBXBuildFile; fileRef = 190ED4362059F3200090562B /* DESRCACC100001 */; };
 		191FFFCE1FA7204B009E9DC4 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 191FFFCD1FA7204B009E9DC4 /* libz.tbd */; };
 		2F38839D1CF46C6E00F114A7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F38839C1CF46C6E00F114A7 /* AppDelegate.m */; };
 		2F3883A01CF46C6E00F114A7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F38839F1CF46C6E00F114A7 /* main.m */; };
@@ -44,6 +46,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		190ED4342059F2A50090562B /* opensc.conf */ = {isa = PBXFileReference; lastKnownFileType = text; name = opensc.conf; path = ../etc/opensc.conf; sourceTree = "<group>"; };
+		190ED4362059F3200090562B /* DESRCACC100001 */ = {isa = PBXFileReference; lastKnownFileType = file; name = DESRCACC100001; path = ../etc/DESRCACC100001; sourceTree = "<group>"; };
 		191FFFCD1FA7204B009E9DC4 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		2F3883981CF46C6E00F114A7 /* OpenSCTokenApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenSCTokenApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F38839B1CF46C6E00F114A7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -87,6 +91,8 @@
 		2F38838F1CF46C6E00F114A7 = {
 			isa = PBXGroup;
 			children = (
+				190ED4362059F3200090562B /* DESRCACC100001 */,
+				190ED4342059F2A50090562B /* opensc.conf */,
 				2F3883CB1CF46FA300F114A7 /* README.md */,
 				2F38839A1CF46C6E00F114A7 /* OpenSCTokenApp */,
 				2F3883B41CF46C9D00F114A7 /* OpenSCToken */,
@@ -221,6 +227,11 @@
 						CreatedOnToolsVersion = 8.0;
 						DevelopmentTeam = GE9933KY56;
 						ProvisioningStyle = Automatic;
+						SystemCapabilities = {
+							com.apple.Sandbox = {
+								enabled = 1;
+							};
+						};
 					};
 				};
 			};
@@ -257,6 +268,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				190ED4372059F3200090562B /* DESRCACC100001 in Resources */,
+				190ED4352059F2A50090562B /* opensc.conf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -307,34 +320,8 @@
 		2F3883A71CF46C6F00F114A7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPRESSION = lossless;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_FLOAT_CONVERSION = YES;
-				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_EXPLICIT_OWNERSHIP_TYPE = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_REPEATED_USE_OF_WEAK = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -349,65 +336,27 @@
 					"DEBUG=1",
 					"$(inherited)",
 				);
-				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
-				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
-				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
-				GCC_WARN_SHADOW = YES;
-				GCC_WARN_STRICT_SELECTOR_MATCH = YES;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNKNOWN_PRAGMAS = YES;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_LABEL = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = $SRCROOT/../src;
+				HEADER_SEARCH_PATHS = (
+					$SRCROOT/../src,
+					$SRCROOT/../openpace_bin/Library/OpenSC/include/,
+					$SRCROOT/../openssl_bin/Library/OpenSC/include/,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					$SRCROOT/../src/libopensc/.libs/libopensc.a,
 					$SRCROOT/../openpace_bin/Library/OpenSC/lib/libeac.a,
 					$SRCROOT/../openssl_bin/Library/OpenSC/lib/libcrypto.a,
 				);
-				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
 		2F3883A81CF46C6F00F114A7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPRESSION = "respect-asset-catalog";
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
-				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
-				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
-				CLANG_WARN_BOOL_CONVERSION = YES;
-				CLANG_WARN_COMMA = YES;
-				CLANG_WARN_CONSTANT_CONVERSION = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
-				CLANG_WARN_EMPTY_BODY = YES;
-				CLANG_WARN_ENUM_CONVERSION = YES;
-				CLANG_WARN_FLOAT_CONVERSION = YES;
-				CLANG_WARN_IMPLICIT_SIGN_CONVERSION = YES;
-				CLANG_WARN_INFINITE_RECURSION = YES;
-				CLANG_WARN_INT_CONVERSION = YES;
-				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
-				CLANG_WARN_OBJC_EXPLICIT_OWNERSHIP_TYPE = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
-				CLANG_WARN_OBJC_REPEATED_USE_OF_WEAK = YES;
-				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
-				CLANG_WARN_STRICT_PROTOTYPES = YES;
-				CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = YES;
-				CLANG_WARN_UNREACHABLE_CODE = YES;
-				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_IDENTITY = "Mac Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -416,40 +365,26 @@
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_NO_COMMON_BLOCKS = YES;
-				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = YES;
-				GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
-				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
-				GCC_WARN_ABOUT_RETURN_TYPE = YES;
-				GCC_WARN_FOUR_CHARACTER_CONSTANTS = YES;
-				GCC_WARN_INITIALIZER_NOT_FULLY_BRACKETED = YES;
-				GCC_WARN_SHADOW = YES;
-				GCC_WARN_STRICT_SELECTOR_MATCH = YES;
-				GCC_WARN_UNDECLARED_SELECTOR = YES;
-				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
-				GCC_WARN_UNKNOWN_PRAGMAS = YES;
-				GCC_WARN_UNUSED_FUNCTION = YES;
-				GCC_WARN_UNUSED_LABEL = YES;
-				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = $SRCROOT/../src;
+				HEADER_SEARCH_PATHS = (
+					$SRCROOT/../src,
+					$SRCROOT/../openpace_bin/Library/OpenSC/include/,
+					$SRCROOT/../openssl_bin/Library/OpenSC/include/,
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				MTL_ENABLE_DEBUG_INFO = NO;
 				OTHER_LDFLAGS = (
 					$SRCROOT/../src/libopensc/.libs/libopensc.a,
 					$SRCROOT/../openpace_bin/Library/OpenSC/lib/libeac.a,
 					$SRCROOT/../openssl_bin/Library/OpenSC/lib/libcrypto.a,
 				);
-				SDKROOT = macosx;
 			};
 			name = Release;
 		};
 		2F3883AA1CF46C6F00F114A7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = OpenSCTokenApp/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/OpenSC/";
+				INSTALL_PATH = "$(LOCAL_APPS_DIR)";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.opensc-project.mac.opensctoken.OpenSCTokenApp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -459,10 +394,8 @@
 		2F3883AB1CF46C6F00F114A7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = OpenSCTokenApp/Info.plist;
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/OpenSC/";
+				INSTALL_PATH = "$(LOCAL_APPS_DIR)";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.opensc-project.mac.opensctoken.OpenSCTokenApp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -473,7 +406,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = OpenSCToken/opensctoken.entitlements;
-				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = OpenSCToken/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.opensc-project.mac.opensctoken.OpenSCTokenApp.OpenSCToken";
@@ -485,7 +417,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = OpenSCToken/opensctoken.entitlements;
-				COMBINE_HIDPI_IMAGES = YES;
 				INFOPLIST_FILE = OpenSCToken/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @executable_path/../../../../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.opensc-project.mac.opensctoken.OpenSCTokenApp.OpenSCToken";

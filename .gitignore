@@ -90,3 +90,4 @@ tags
 /*.gcno
 
 # End of https://www.gitignore.io/api/vim,xcode,objective-c
+.DS_Store

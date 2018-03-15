@@ -22,6 +22,8 @@
 
 #include "libopensc/log.h"
 #include "libopensc/pkcs15.h"
+#include "libopensc/../../config.h"
+#include "eac/eac.h"
 
 #import "Token.h"
 
@@ -65,23 +67,41 @@
     self.card = NULL;
     self.p15card = NULL;
     self.ctx = NULL;
-    
+
+    os_log(OS_LOG_DEFAULT, "%s", OPENSC_SCM_REVISION);
+
+    /* Respect the App's sandbox; use only bundled resources */
+    NSString *Resources = [[NSBundle mainBundle] resourcePath];
+    NSString * opensc_conf = [[NSBundle mainBundle] pathForResource:@"opensc" ofType:@"conf"];
+    NSArray* Documents = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    os_log(OS_LOG_DEFAULT, "For logging and persistent data cache please use %@", Documents.lastObject);
+    if (opensc_conf != nil) {
+        os_log(OS_LOG_DEFAULT, "Reading configuration %@", opensc_conf);
+        setenv("OPENSC_CONF", opensc_conf.fileSystemRepresentation, 0);
+    }
+
     memset(&ctx_param, 0, sizeof(ctx_param));
     ctx_param.ver = 1;
     ctx_param.app_name = "cryptotokenkit";
-    
+
     r = sc_context_create(&ctx, &ctx_param);
     if (r || !ctx)   {
         os_log_error(OS_LOG_DEFAULT, "sc_context_create: %s", sc_strerror(r));
         goto err;
     }
-    
+
     r = sc_ctx_use_reader(ctx, (__bridge void *)(smartCard.slot), (__bridge void *)(smartCard));
     LOG_TEST_GOTO_ERR(ctx, r, "sc_ctx_use_reader");
     
     /* sc_ctx_use_reader() adds our handles to the end of the list of all readers */
     r = sc_connect_card(sc_ctx_get_reader(ctx, sc_ctx_get_reader_count(ctx)-1), &card);
     LOG_TEST_GOTO_ERR(ctx, r, "sc_connect_card");
+    
+    /* Initialize OpenPACE to access Resources within the App's sandbox. This initialization must happen after EAC_init() */
+    if (Resources != nil) {
+        EAC_set_cvc_default_dir(Resources.fileSystemRepresentation);
+        EAC_set_x509_default_dir(Resources.fileSystemRepresentation);
+    }
     
     app_generic = sc_pkcs15_get_application_by_type(card, "generic");
     aid = app_generic ? &app_generic->aid : NULL;
@@ -133,7 +153,7 @@
             continue;
         }
         [keyItem setName:keyName];
-        
+
         NSMutableDictionary<NSNumber *, TKTokenOperationConstraint> *constraints = [NSMutableDictionary dictionary];
         TKTokenOperationConstraint constraint;
         if (prkey_obj->auth_id.len == 0) {
@@ -169,7 +189,7 @@
         keyItem.constraints = constraints;
         [items addObject:keyItem];
     }
-    
+
     instanceID = [NSString stringWithUTF8String:p15card->tokeninfo->serial_number];
     p15card->opts.use_pin_cache = 0;
     
