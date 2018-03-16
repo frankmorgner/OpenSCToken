@@ -91,3 +91,7 @@ tags
 
 # End of https://www.gitignore.io/api/vim,xcode,objective-c
 .DS_Store
+OpenSC
+openssl
+openpace
+*.dmg

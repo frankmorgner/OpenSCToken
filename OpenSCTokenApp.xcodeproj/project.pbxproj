@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		190ED4352059F2A50090562B /* opensc.conf in Resources */ = {isa = PBXBuildFile; fileRef = 190ED4342059F2A50090562B /* opensc.conf */; };
-		190ED4372059F3200090562B /* DESRCACC100001 in Resources */ = {isa = PBXBuildFile; fileRef = 190ED4362059F3200090562B /* DESRCACC100001 */; };
+		190ED43A205ADA9B0090562B /* opensc.conf in Resources */ = {isa = PBXBuildFile; fileRef = 190ED439205ADA9B0090562B /* opensc.conf */; };
+		190ED43C205ADAB40090562B /* DESRCACC100001 in Resources */ = {isa = PBXBuildFile; fileRef = 190ED43B205ADAB40090562B /* DESRCACC100001 */; };
 		191FFFCE1FA7204B009E9DC4 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 191FFFCD1FA7204B009E9DC4 /* libz.tbd */; };
 		2F38839D1CF46C6E00F114A7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F38839C1CF46C6E00F114A7 /* AppDelegate.m */; };
 		2F3883A01CF46C6E00F114A7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F38839F1CF46C6E00F114A7 /* main.m */; };
@@ -46,8 +46,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		190ED4342059F2A50090562B /* opensc.conf */ = {isa = PBXFileReference; lastKnownFileType = text; name = opensc.conf; path = ../etc/opensc.conf; sourceTree = "<group>"; };
-		190ED4362059F3200090562B /* DESRCACC100001 */ = {isa = PBXFileReference; lastKnownFileType = file; name = DESRCACC100001; path = ../etc/DESRCACC100001; sourceTree = "<group>"; };
+		190ED439205ADA9B0090562B /* opensc.conf */ = {isa = PBXFileReference; lastKnownFileType = text; name = opensc.conf; path = OpenSC/etc/opensc.conf; sourceTree = "<group>"; };
+		190ED43B205ADAB40090562B /* DESRCACC100001 */ = {isa = PBXFileReference; lastKnownFileType = file; name = DESRCACC100001; path = OpenSC/etc/DESRCACC100001; sourceTree = "<group>"; };
 		191FFFCD1FA7204B009E9DC4 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		2F3883981CF46C6E00F114A7 /* OpenSCTokenApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenSCTokenApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F38839B1CF46C6E00F114A7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -91,8 +91,8 @@
 		2F38838F1CF46C6E00F114A7 = {
 			isa = PBXGroup;
 			children = (
-				190ED4362059F3200090562B /* DESRCACC100001 */,
-				190ED4342059F2A50090562B /* opensc.conf */,
+				190ED43B205ADAB40090562B /* DESRCACC100001 */,
+				190ED439205ADA9B0090562B /* opensc.conf */,
 				2F3883CB1CF46FA300F114A7 /* README.md */,
 				2F38839A1CF46C6E00F114A7 /* OpenSCTokenApp */,
 				2F3883B41CF46C9D00F114A7 /* OpenSCToken */,
@@ -268,8 +268,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				190ED4372059F3200090562B /* DESRCACC100001 in Resources */,
-				190ED4352059F2A50090562B /* opensc.conf in Resources */,
+				190ED43C205ADAB40090562B /* DESRCACC100001 in Resources */,
+				190ED43A205ADA9B0090562B /* opensc.conf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -338,16 +338,16 @@
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				HEADER_SEARCH_PATHS = (
-					$SRCROOT/../src,
-					$SRCROOT/../openpace_bin/Library/OpenSC/include/,
-					$SRCROOT/../openssl_bin/Library/OpenSC/include/,
+					$SRCROOT/OpenSC/src,
+					$SRCROOT/build/openpace/include/,
+					$SRCROOT/build/openssl/include/,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
-					$SRCROOT/../src/libopensc/.libs/libopensc.a,
-					$SRCROOT/../openpace_bin/Library/OpenSC/lib/libeac.a,
-					$SRCROOT/../openssl_bin/Library/OpenSC/lib/libcrypto.a,
+					$SRCROOT/OpenSC/src/libopensc/.libs/libopensc.a,
+					$SRCROOT/build/openpace/lib/libeac.a,
+					$SRCROOT/build/openssl/lib/libcrypto.a,
 				);
 			};
 			name = Debug;
@@ -367,15 +367,15 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				HEADER_SEARCH_PATHS = (
-					$SRCROOT/../src,
-					$SRCROOT/../openpace_bin/Library/OpenSC/include/,
-					$SRCROOT/../openssl_bin/Library/OpenSC/include/,
+					$SRCROOT/OpenSC/src,
+					$SRCROOT/build/openpace/include/,
+					$SRCROOT/build/openssl/include/,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
 				OTHER_LDFLAGS = (
-					$SRCROOT/../src/libopensc/.libs/libopensc.a,
-					$SRCROOT/../openpace_bin/Library/OpenSC/lib/libeac.a,
-					$SRCROOT/../openssl_bin/Library/OpenSC/lib/libcrypto.a,
+					$SRCROOT/OpenSC/src/libopensc/.libs/libopensc.a,
+					$SRCROOT/build/openpace/lib/libeac.a,
+					$SRCROOT/build/openssl/lib/libcrypto.a,
 				);
 			};
 			name = Release;

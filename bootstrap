@@ -1,0 +1,52 @@
+#!/bin/bash
+
+BUILDPATH=${PWD}/build
+PREFIX=/
+export MACOSX_DEPLOYMENT_TARGET="10.12"
+
+set -ex
+
+if ! pkg-config libcrypto --atleast-version=1.0.1; then
+	# OpenSSL is not installed
+	if ! test -e $BUILDPATH/openssl/$PREFIX/lib/pkgconfig; then
+		# Build OpenSSL manually, because Apple's binaries are deprecated
+		if ! test -e openssl; then
+			git clone --depth=1 https://github.com/openssl/openssl.git -b OpenSSL_1_0_2-stable
+		fi
+		cd openssl
+		KERNEL_BITS=64 ./config --prefix=$PREFIX
+		make update
+		make depend
+		make
+		make INSTALL_PREFIX=$BUILDPATH/openssl install_sw
+		cd ..
+	fi
+	export OPENSSL_CFLAGS="`env PKG_CONFIG_PATH=$BUILDPATH/openssl/$PREFIX/lib/pkgconfig PKG_CONFIG_SYSROOT_DIR=$BUILDPATH/openssl pkg-config --static --cflags libcrypto`"
+	export OPENSSL_LIBS="`  env PKG_CONFIG_PATH=$BUILDPATH/openssl/$PREFIX/lib/pkgconfig PKG_CONFIG_SYSROOT_DIR=$BUILDPATH/openssl pkg-config --static --libs   libcrypto`"
+fi
+
+if ! test -e $BUILDPATH/openpace/$PREFIX/lib/pkgconfig; then
+	if ! test -e openpace; then
+		git clone --depth=1 https://github.com/frankmorgner/openpace.git
+	fi
+	cd openpace
+	if ! test -e Makefile; then
+		autoreconf -vis
+		./configure --disable-shared --prefix=$PREFIX CRYPTO_CFLAGS="$OPENSSL_CFLAGS" CRYPTO_LIBS="$OPENSSL_LIBS"
+	fi
+	make DESTDIR=$BUILDPATH/openpace install
+	cd ..
+fi
+export OPENPACE_CFLAGS="`env PKG_CONFIG_PATH=$BUILDPATH/openssl/$PREFIX/lib/pkgconfig:$BUILDPATH/openpace/$PREFIX/lib/pkgconfig PKG_CONFIG_SYSROOT_DIR=$BUILDPATH/openpace pkg-config --static --cflags libeac` $OPENSSL_CFLAGS"
+export OPENPACE_LIBS="`  env PKG_CONFIG_PATH=$BUILDPATH/openssl/$PREFIX/lib/pkgconfig:$BUILDPATH/openpace/$PREFIX/lib/pkgconfig PKG_CONFIG_SYSROOT_DIR=$BUILDPATH/openpace pkg-config --static --libs   libeac` $OPENSSL_LIBS"
+
+if ! test -e OpenSC; then
+	git clone --depth=1 https://github.com/OpenSC/OpenSC.git
+fi
+cd OpenSC
+if ! test -e Makefile; then
+	autoreconf -vis
+	./configure --prefix=$PREFIX --disable-pcsc  --enable-cryptotokenkit --disable-notify
+fi
+make
+cd ..

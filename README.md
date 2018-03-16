@@ -24,37 +24,35 @@ OpenSCToken aims at providing the existing functionality of OpenSC through Crypt
 
 Requirements:
 
-- OpenSC installed and compiled with CryptoTokenKit
 - Xcode 8.0 or later; macOS 10.12 SDK or later
 - Code signing credentials
 
 ```
-# Build basic version of OpenSC with CryptoTokenKit
-git clone https://github.com/OpenSC/OpenSC.git
-cd OpenSC
-./bootstrap
-# We disable dependencies here, but at some point we should integrate with `../MacOSX/build`, which builds all of them
-./configure --disable-pcsc  --enable-cryptotokenkit \
-    --disable-openssl --disable-readline --disable-zlib --prefix=/Library/OpenSC
-make install DESTDIR=${PWD}/target
-
-# Now build OpenSCToken
+# Checkout OpenSCToken
 git clone http://github.com/frankmorgner/OpenSCToken.git
-xcodebuild -target OpenSCTokenApp -configuration Release -project OpenSCToken/OpenSCTokenApp.xcodeproj install DSTROOT=${PWD}/target
+
+# Checkout and build all dependencies (i.e. OpenSSL, OpenPACE and OpenSC)
+cd OpenSCToken
+./bootstrap
+
+# Now build OpenSCTokenApp
+xcodebuild -target OpenSCTokenApp -configuration Release -project OpenSCToken/OpenSCTokenApp.xcodeproj install DSTROOT=${PWD}/build
 ```
+
+Once all dependencies are available at the correct locations (via `./bootstrap`), the project can be executed and debugged from Xcode. Running the App, adds OpenSCToken to the system's plug-in registry. After insterting a token, attach to the process `OpenSCToken` for debugging with Xcode.
 
 ## Running OpenSCToken
 
 OpenSCToken requires macOS 10.12 or later. For running the plug-in, you have three options:
 
-1. `open target/Library/OpenSC/OpenSCTokenApp.app`
+1. `open build/Applications/OpenSCTokenApp.app`
 Runs the hosting application. Your token will be **available while the app is running**.
 
-2. `pluginkit -a target/Library/OpenSC/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex`
-Registers OpenSC in the PlugInKit subsystem for the current user. Your token will be **available after login**.
+2. `pluginkit -a build/Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex`
+Registers OpenSC in the PlugInKit subsystem for the current user. Your token will be **available after login**. Note that database clean-ups may eventually remove the plug-in.
 
-3. `sudo cp -r target/Library/OpenSC/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex /System/Library/Frameworks/CryptoTokenKit.framework/PlugIns`
-Registers OpenSC globally. Your token **will always be available**. Copying the plug-in requires *security integrity protection* to be disabled.
+3. `sudo cp -r build/Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex /System/Library/Frameworks/CryptoTokenKit.framework/PlugIns`
+Registers OpenSC globally. Your token **will always be available**. Copying the plug-in requires *security integrity protection (SIP)* to be disabled.
 
 ## Test Results
 

@@ -1,0 +1,28 @@
+#!/bin/bash
+
+. ./bootstrap
+
+# Build and copy OpenSCTokenApp
+xcodebuild -target OpenSCTokenApp -configuration Debug -project OpenSCTokenApp.xcodeproj install DSTROOT=${BUILDPATH}
+
+# Add link to Applications
+if ! test -e "${BUILDPATH}/Applications/Applications"; then
+	ln -s "/Applications" "${BUILDPATH}/Applications/Applications"
+fi
+
+   name="$(defaults read ${BUILDPATH}/Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex/Contents/Info CFBundleName)"
+  title="$(defaults read ${BUILDPATH}/Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex/Contents/Info CFBundleDisplayName)"
+version="$(defaults read ${BUILDPATH}/Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex/Contents/Info CFBundleShortVersionString)"
+ opensc="$(cat OpenSC/win32/winconfig.h | perl -pe 'if(($v)=/([0-9]+([.][0-9]+)+)/){print"$v\n";exit}$_=""')"
+
+# Create .dmg
+rm -f $name.dmg
+i=0
+while ! hdiutil create -srcfolder "${BUILDPATH}/Applications/" -volname "$title $version (OpenSC $opensc)" $name.dmg
+do
+	i=$[$i+1]
+	if [ $i -gt 2 ]
+	then
+		exit 1
+	fi
+done
