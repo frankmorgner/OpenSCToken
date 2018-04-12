@@ -43,15 +43,12 @@ Once all dependencies are available at the correct locations (via `./bootstrap`)
 
 ## Running OpenSCToken
 
-OpenSCToken requires macOS 10.12 or later. For running the plug-in, you have three options:
+OpenSCToken requires macOS 10.12 or later. For running the plug-in, you have two options:
 
-1. `open build/Applications/OpenSCTokenApp.app`
-Runs the hosting application. Your token will be **available while the app is running**.
-
-2. `pluginkit -a build/Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex`
+1. `open build/Applications/OpenSCTokenApp.app` or run `pluginkit -a build/Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex`:
 Registers OpenSC in the PlugInKit subsystem for the current user. Your token will be **available after login**. Note that database clean-ups may eventually remove the plug-in.
 
-3. `sudo cp -r build/Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex /System/Library/Frameworks/CryptoTokenKit.framework/PlugIns`
+2. `sudo cp -r build/Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex /System/Library/Frameworks/CryptoTokenKit.framework/PlugIns`:
 Registers OpenSC globally. Your token **will always be available**. Copying the plug-in requires *security integrity protection (SIP)* to be disabled.
 
 ## Test Results
