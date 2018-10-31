@@ -3,6 +3,7 @@
 BUILDPATH=${PWD}/build
 PREFIX=/
 export MACOSX_DEPLOYMENT_TARGET="10.12"
+RESSOURCES=/Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex/Contents/Resources
 
 set -ex
 
@@ -32,7 +33,7 @@ if ! test -e $BUILDPATH/openpace/$PREFIX/lib/pkgconfig; then
 	cd openpace
 	if ! test -e Makefile; then
 		autoreconf -vis
-		./configure --disable-shared --prefix=$PREFIX CRYPTO_CFLAGS="$OPENSSL_CFLAGS" CRYPTO_LIBS="$OPENSSL_LIBS"
+		./configure --disable-shared --prefix=$PREFIX --sysconfdir=$RESSOURCES --enable-cvcdir=$RESSOURCES --enable-x509dir=$RESSOURCES /Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex/Contents/Resources/ CRYPTO_CFLAGS="$OPENSSL_CFLAGS" CRYPTO_LIBS="$OPENSSL_LIBS"
 	fi
 	make DESTDIR=$BUILDPATH/openpace install
 	cd ..
@@ -46,7 +47,7 @@ fi
 cd OpenSC
 if ! test -e Makefile; then
 	autoreconf -vis
-	./configure --prefix=$PREFIX --disable-pcsc  --enable-cryptotokenkit --disable-notify
+	./configure --disable-shared --prefix=$PREFIX --sysconfdir=$RESSOURCES --disable-pcsc  --enable-cryptotokenkit --disable-notify
 fi
 make
 cd ..

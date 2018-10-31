@@ -7,9 +7,46 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		190605262189CC71005B78B2 /* pkcs11-global.c in Sources */ = {isa = PBXBuildFile; fileRef = 1906051A2189CC70005B78B2 /* pkcs11-global.c */; };
+		190605272189CC71005B78B2 /* pkcs11-display.c in Sources */ = {isa = PBXBuildFile; fileRef = 1906051B2189CC70005B78B2 /* pkcs11-display.c */; };
+		190605282189CC71005B78B2 /* misc.c in Sources */ = {isa = PBXBuildFile; fileRef = 1906051C2189CC70005B78B2 /* misc.c */; };
+		190605292189CC71005B78B2 /* mechanism.c in Sources */ = {isa = PBXBuildFile; fileRef = 1906051D2189CC70005B78B2 /* mechanism.c */; };
+		1906052A2189CC71005B78B2 /* debug.c in Sources */ = {isa = PBXBuildFile; fileRef = 1906051E2189CC70005B78B2 /* debug.c */; };
+		1906052C2189CC71005B78B2 /* framework-pkcs15.c in Sources */ = {isa = PBXBuildFile; fileRef = 190605202189CC71005B78B2 /* framework-pkcs15.c */; };
+		1906052D2189CC71005B78B2 /* pkcs11-session.c in Sources */ = {isa = PBXBuildFile; fileRef = 190605212189CC71005B78B2 /* pkcs11-session.c */; };
+		1906052E2189CC71005B78B2 /* openssl.c in Sources */ = {isa = PBXBuildFile; fileRef = 190605222189CC71005B78B2 /* openssl.c */; };
+		1906052F2189CC71005B78B2 /* framework-pkcs15init.c in Sources */ = {isa = PBXBuildFile; fileRef = 190605232189CC71005B78B2 /* framework-pkcs15init.c */; };
+		190605302189CC71005B78B2 /* slot.c in Sources */ = {isa = PBXBuildFile; fileRef = 190605242189CC71005B78B2 /* slot.c */; };
+		190605312189CC71005B78B2 /* pkcs11-object.c in Sources */ = {isa = PBXBuildFile; fileRef = 190605252189CC71005B78B2 /* pkcs11-object.c */; };
+		190605352189ED7D005B78B2 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2F3883B21CF46C9D00F114A7 /* Cocoa.framework */; };
+		190605362189ED8F005B78B2 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 191FFFCD1FA7204B009E9DC4 /* libz.tbd */; };
+		190605382189EE4E005B78B2 /* CryptoTokenKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 190605372189EE4E005B78B2 /* CryptoTokenKit.framework */; };
+		190605392189EE57005B78B2 /* CryptoTokenKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 190605372189EE4E005B78B2 /* CryptoTokenKit.framework */; };
 		190ED43A205ADA9B0090562B /* opensc.conf in Resources */ = {isa = PBXBuildFile; fileRef = 190ED439205ADA9B0090562B /* opensc.conf */; };
 		190ED43C205ADAB40090562B /* DESRCACC100001 in Resources */ = {isa = PBXBuildFile; fileRef = 190ED43B205ADAB40090562B /* DESRCACC100001 */; };
 		191FFFCE1FA7204B009E9DC4 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 191FFFCD1FA7204B009E9DC4 /* libz.tbd */; };
+		19844E5C218A7BE20055A9CC /* opensc-pkcs11.dylib.bundle in Embed opensc-pkcs11 */ = {isa = PBXBuildFile; fileRef = 190605112189CA57005B78B2 /* opensc-pkcs11.dylib.bundle */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		19AEACA5218A68E9001B2CBF /* pkcs15-init in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEAC8F218A68E8001B2CBF /* pkcs15-init */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACA6218A68E9001B2CBF /* pkcs15-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEAC90218A68E8001B2CBF /* pkcs15-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACA7218A68E9001B2CBF /* westcos-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEAC91218A68E8001B2CBF /* westcos-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACA8218A68E9001B2CBF /* eidenv in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEAC92218A68E8001B2CBF /* eidenv */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACA9218A68E9001B2CBF /* netkey-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEAC93218A68E8001B2CBF /* netkey-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACAA218A68E9001B2CBF /* opensc-notify in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEAC94218A68E8001B2CBF /* opensc-notify */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACAB218A68E9001B2CBF /* iasecc-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEAC95218A68E8001B2CBF /* iasecc-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACAC218A68E9001B2CBF /* openpgp-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEAC96218A68E8001B2CBF /* openpgp-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACAD218A68E9001B2CBF /* npa-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEAC97218A68E8001B2CBF /* npa-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACAE218A68E9001B2CBF /* egk-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEAC98218A68E8001B2CBF /* egk-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACAF218A68E9001B2CBF /* piv-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEAC99218A68E8001B2CBF /* piv-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACB0218A68E9001B2CBF /* cryptoflex-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEAC9A218A68E9001B2CBF /* cryptoflex-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACB2218A68E9001B2CBF /* dnie-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEAC9C218A68E9001B2CBF /* dnie-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACB3218A68E9001B2CBF /* sc-hsm-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEAC9D218A68E9001B2CBF /* sc-hsm-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACB4218A68E9001B2CBF /* pkcs11-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEAC9E218A68E9001B2CBF /* pkcs11-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACB5218A68E9001B2CBF /* pkcs15-crypt in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEAC9F218A68E9001B2CBF /* pkcs15-crypt */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACB6218A68E9001B2CBF /* cardos-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEACA0218A68E9001B2CBF /* cardos-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACB7218A68E9001B2CBF /* gids-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEACA1218A68E9001B2CBF /* gids-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACB8218A68E9001B2CBF /* opensc-asn1 in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEACA2218A68E9001B2CBF /* opensc-asn1 */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACB9218A68E9001B2CBF /* opensc-explorer in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEACA3218A68E9001B2CBF /* opensc-explorer */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACBA218A68E9001B2CBF /* opensc-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEACA4218A68E9001B2CBF /* opensc-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		2F38839D1CF46C6E00F114A7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F38839C1CF46C6E00F114A7 /* AppDelegate.m */; };
 		2F3883A01CF46C6E00F114A7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F38839F1CF46C6E00F114A7 /* main.m */; };
 		2F3883A21CF46C6E00F114A7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F3883A11CF46C6E00F114A7 /* Assets.xcassets */; };
@@ -22,6 +59,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		19844E59218A7AE80055A9CC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2F3883901CF46C6E00F114A7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 190605102189CA57005B78B2;
+			remoteInfo = "opensc-pkcs11";
+		};
+		19AEAC8B218A6689001B2CBF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2F3883901CF46C6E00F114A7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 190605102189CA57005B78B2;
+			remoteInfo = "opensc-pkcs11";
+		};
 		2F3883BD1CF46C9D00F114A7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2F3883901CF46C6E00F114A7 /* Project object */;
@@ -32,6 +83,48 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		19844E5B218A7B8D0055A9CC /* Embed opensc-pkcs11 */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 1;
+			files = (
+				19844E5C218A7BE20055A9CC /* opensc-pkcs11.dylib.bundle in Embed opensc-pkcs11 */,
+			);
+			name = "Embed opensc-pkcs11";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		19AEAC8E218A6854001B2CBF /* Embed OpenSC Tools */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 6;
+			files = (
+				19AEACA5218A68E9001B2CBF /* pkcs15-init in Embed OpenSC Tools */,
+				19AEACA6218A68E9001B2CBF /* pkcs15-tool in Embed OpenSC Tools */,
+				19AEACA7218A68E9001B2CBF /* westcos-tool in Embed OpenSC Tools */,
+				19AEACA8218A68E9001B2CBF /* eidenv in Embed OpenSC Tools */,
+				19AEACA9218A68E9001B2CBF /* netkey-tool in Embed OpenSC Tools */,
+				19AEACAA218A68E9001B2CBF /* opensc-notify in Embed OpenSC Tools */,
+				19AEACAB218A68E9001B2CBF /* iasecc-tool in Embed OpenSC Tools */,
+				19AEACAC218A68E9001B2CBF /* openpgp-tool in Embed OpenSC Tools */,
+				19AEACAD218A68E9001B2CBF /* npa-tool in Embed OpenSC Tools */,
+				19AEACAE218A68E9001B2CBF /* egk-tool in Embed OpenSC Tools */,
+				19AEACAF218A68E9001B2CBF /* piv-tool in Embed OpenSC Tools */,
+				19AEACB0218A68E9001B2CBF /* cryptoflex-tool in Embed OpenSC Tools */,
+				19AEACB2218A68E9001B2CBF /* dnie-tool in Embed OpenSC Tools */,
+				19AEACB3218A68E9001B2CBF /* sc-hsm-tool in Embed OpenSC Tools */,
+				19AEACB4218A68E9001B2CBF /* pkcs11-tool in Embed OpenSC Tools */,
+				19AEACB5218A68E9001B2CBF /* pkcs15-crypt in Embed OpenSC Tools */,
+				19AEACB6218A68E9001B2CBF /* cardos-tool in Embed OpenSC Tools */,
+				19AEACB7218A68E9001B2CBF /* gids-tool in Embed OpenSC Tools */,
+				19AEACB8218A68E9001B2CBF /* opensc-asn1 in Embed OpenSC Tools */,
+				19AEACB9218A68E9001B2CBF /* opensc-explorer in Embed OpenSC Tools */,
+				19AEACBA218A68E9001B2CBF /* opensc-tool in Embed OpenSC Tools */,
+			);
+			name = "Embed OpenSC Tools";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2F3883C31CF46C9D00F114A7 /* Embed App Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -46,9 +139,45 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		190605112189CA57005B78B2 /* opensc-pkcs11.dylib.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "opensc-pkcs11.dylib.bundle"; sourceTree = BUILT_PRODUCTS_DIR; };
+		190605132189CA57005B78B2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		190605192189CC70005B78B2 /* pkcs11-display.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "pkcs11-display.h"; path = "OpenSC/src/pkcs11/pkcs11-display.h"; sourceTree = SOURCE_ROOT; };
+		1906051A2189CC70005B78B2 /* pkcs11-global.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "pkcs11-global.c"; path = "OpenSC/src/pkcs11/pkcs11-global.c"; sourceTree = SOURCE_ROOT; };
+		1906051B2189CC70005B78B2 /* pkcs11-display.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "pkcs11-display.c"; path = "OpenSC/src/pkcs11/pkcs11-display.c"; sourceTree = SOURCE_ROOT; };
+		1906051C2189CC70005B78B2 /* misc.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = misc.c; path = OpenSC/src/pkcs11/misc.c; sourceTree = SOURCE_ROOT; };
+		1906051D2189CC70005B78B2 /* mechanism.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = mechanism.c; path = OpenSC/src/pkcs11/mechanism.c; sourceTree = SOURCE_ROOT; };
+		1906051E2189CC70005B78B2 /* debug.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = debug.c; path = OpenSC/src/pkcs11/debug.c; sourceTree = SOURCE_ROOT; };
+		190605202189CC71005B78B2 /* framework-pkcs15.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "framework-pkcs15.c"; path = "OpenSC/src/pkcs11/framework-pkcs15.c"; sourceTree = SOURCE_ROOT; };
+		190605212189CC71005B78B2 /* pkcs11-session.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "pkcs11-session.c"; path = "OpenSC/src/pkcs11/pkcs11-session.c"; sourceTree = SOURCE_ROOT; };
+		190605222189CC71005B78B2 /* openssl.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = openssl.c; path = OpenSC/src/pkcs11/openssl.c; sourceTree = SOURCE_ROOT; };
+		190605232189CC71005B78B2 /* framework-pkcs15init.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "framework-pkcs15init.c"; path = "OpenSC/src/pkcs11/framework-pkcs15init.c"; sourceTree = SOURCE_ROOT; };
+		190605242189CC71005B78B2 /* slot.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = slot.c; path = OpenSC/src/pkcs11/slot.c; sourceTree = SOURCE_ROOT; };
+		190605252189CC71005B78B2 /* pkcs11-object.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = "pkcs11-object.c"; path = "OpenSC/src/pkcs11/pkcs11-object.c"; sourceTree = SOURCE_ROOT; };
+		190605372189EE4E005B78B2 /* CryptoTokenKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CryptoTokenKit.framework; path = System/Library/Frameworks/CryptoTokenKit.framework; sourceTree = SDKROOT; };
 		190ED439205ADA9B0090562B /* opensc.conf */ = {isa = PBXFileReference; lastKnownFileType = text; name = opensc.conf; path = OpenSC/etc/opensc.conf; sourceTree = "<group>"; };
 		190ED43B205ADAB40090562B /* DESRCACC100001 */ = {isa = PBXFileReference; lastKnownFileType = file; name = DESRCACC100001; path = OpenSC/etc/DESRCACC100001; sourceTree = "<group>"; };
 		191FFFCD1FA7204B009E9DC4 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		19AEAC8F218A68E8001B2CBF /* pkcs15-init */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "pkcs15-init"; path = "OpenSC/src/tools/pkcs15-init"; sourceTree = "<group>"; };
+		19AEAC90218A68E8001B2CBF /* pkcs15-tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "pkcs15-tool"; path = "OpenSC/src/tools/pkcs15-tool"; sourceTree = "<group>"; };
+		19AEAC91218A68E8001B2CBF /* westcos-tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "westcos-tool"; path = "OpenSC/src/tools/westcos-tool"; sourceTree = "<group>"; };
+		19AEAC92218A68E8001B2CBF /* eidenv */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = eidenv; path = OpenSC/src/tools/eidenv; sourceTree = "<group>"; };
+		19AEAC93218A68E8001B2CBF /* netkey-tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "netkey-tool"; path = "OpenSC/src/tools/netkey-tool"; sourceTree = "<group>"; };
+		19AEAC94218A68E8001B2CBF /* opensc-notify */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "opensc-notify"; path = "OpenSC/src/tools/opensc-notify"; sourceTree = "<group>"; };
+		19AEAC95218A68E8001B2CBF /* iasecc-tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "iasecc-tool"; path = "OpenSC/src/tools/iasecc-tool"; sourceTree = "<group>"; };
+		19AEAC96218A68E8001B2CBF /* openpgp-tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "openpgp-tool"; path = "OpenSC/src/tools/openpgp-tool"; sourceTree = "<group>"; };
+		19AEAC97218A68E8001B2CBF /* npa-tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "npa-tool"; path = "OpenSC/src/tools/npa-tool"; sourceTree = "<group>"; };
+		19AEAC98218A68E8001B2CBF /* egk-tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "egk-tool"; path = "OpenSC/src/tools/egk-tool"; sourceTree = "<group>"; };
+		19AEAC99218A68E8001B2CBF /* piv-tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "piv-tool"; path = "OpenSC/src/tools/piv-tool"; sourceTree = "<group>"; };
+		19AEAC9A218A68E9001B2CBF /* cryptoflex-tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "cryptoflex-tool"; path = "OpenSC/src/tools/cryptoflex-tool"; sourceTree = "<group>"; };
+		19AEAC9C218A68E9001B2CBF /* dnie-tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "dnie-tool"; path = "OpenSC/src/tools/dnie-tool"; sourceTree = "<group>"; };
+		19AEAC9D218A68E9001B2CBF /* sc-hsm-tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "sc-hsm-tool"; path = "OpenSC/src/tools/sc-hsm-tool"; sourceTree = "<group>"; };
+		19AEAC9E218A68E9001B2CBF /* pkcs11-tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "pkcs11-tool"; path = "OpenSC/src/tools/pkcs11-tool"; sourceTree = "<group>"; };
+		19AEAC9F218A68E9001B2CBF /* pkcs15-crypt */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "pkcs15-crypt"; path = "OpenSC/src/tools/pkcs15-crypt"; sourceTree = "<group>"; };
+		19AEACA0218A68E9001B2CBF /* cardos-tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "cardos-tool"; path = "OpenSC/src/tools/cardos-tool"; sourceTree = "<group>"; };
+		19AEACA1218A68E9001B2CBF /* gids-tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "gids-tool"; path = "OpenSC/src/tools/gids-tool"; sourceTree = "<group>"; };
+		19AEACA2218A68E9001B2CBF /* opensc-asn1 */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "opensc-asn1"; path = "OpenSC/src/tools/opensc-asn1"; sourceTree = "<group>"; };
+		19AEACA3218A68E9001B2CBF /* opensc-explorer */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "opensc-explorer"; path = "OpenSC/src/tools/opensc-explorer"; sourceTree = "<group>"; };
+		19AEACA4218A68E9001B2CBF /* opensc-tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "opensc-tool"; path = "OpenSC/src/tools/opensc-tool"; sourceTree = "<group>"; };
 		2F3883981CF46C6E00F114A7 /* OpenSCTokenApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenSCTokenApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F38839B1CF46C6E00F114A7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		2F38839C1CF46C6E00F114A7 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -69,6 +198,16 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		1906050E2189CA57005B78B2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				190605392189EE57005B78B2 /* CryptoTokenKit.framework in Frameworks */,
+				190605352189ED7D005B78B2 /* Cocoa.framework in Frameworks */,
+				190605362189ED8F005B78B2 /* libz.tbd in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2F3883951CF46C6E00F114A7 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -80,6 +219,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				190605382189EE4E005B78B2 /* CryptoTokenKit.framework in Frameworks */,
 				2F3883B31CF46C9D00F114A7 /* Cocoa.framework in Frameworks */,
 				191FFFCE1FA7204B009E9DC4 /* libz.tbd in Frameworks */,
 			);
@@ -88,14 +228,56 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		190605122189CA57005B78B2 /* opensc-pkcs11 */ = {
+			isa = PBXGroup;
+			children = (
+				1906051E2189CC70005B78B2 /* debug.c */,
+				190605202189CC71005B78B2 /* framework-pkcs15.c */,
+				190605232189CC71005B78B2 /* framework-pkcs15init.c */,
+				1906051D2189CC70005B78B2 /* mechanism.c */,
+				1906051C2189CC70005B78B2 /* misc.c */,
+				190605222189CC71005B78B2 /* openssl.c */,
+				1906051B2189CC70005B78B2 /* pkcs11-display.c */,
+				190605192189CC70005B78B2 /* pkcs11-display.h */,
+				1906051A2189CC70005B78B2 /* pkcs11-global.c */,
+				190605252189CC71005B78B2 /* pkcs11-object.c */,
+				190605212189CC71005B78B2 /* pkcs11-session.c */,
+				190605242189CC71005B78B2 /* slot.c */,
+				190605132189CA57005B78B2 /* Info.plist */,
+			);
+			path = "opensc-pkcs11";
+			sourceTree = "<group>";
+		};
 		2F38838F1CF46C6E00F114A7 = {
 			isa = PBXGroup;
 			children = (
+				19AEACA0218A68E9001B2CBF /* cardos-tool */,
+				19AEAC9A218A68E9001B2CBF /* cryptoflex-tool */,
+				19AEAC9C218A68E9001B2CBF /* dnie-tool */,
+				19AEAC98218A68E8001B2CBF /* egk-tool */,
+				19AEAC92218A68E8001B2CBF /* eidenv */,
+				19AEACA1218A68E9001B2CBF /* gids-tool */,
+				19AEAC95218A68E8001B2CBF /* iasecc-tool */,
+				19AEAC93218A68E8001B2CBF /* netkey-tool */,
+				19AEAC97218A68E8001B2CBF /* npa-tool */,
+				19AEAC96218A68E8001B2CBF /* openpgp-tool */,
+				19AEACA2218A68E9001B2CBF /* opensc-asn1 */,
+				19AEACA3218A68E9001B2CBF /* opensc-explorer */,
+				19AEAC94218A68E8001B2CBF /* opensc-notify */,
+				19AEACA4218A68E9001B2CBF /* opensc-tool */,
+				19AEAC99218A68E8001B2CBF /* piv-tool */,
+				19AEAC9E218A68E9001B2CBF /* pkcs11-tool */,
+				19AEAC9F218A68E9001B2CBF /* pkcs15-crypt */,
+				19AEAC8F218A68E8001B2CBF /* pkcs15-init */,
+				19AEAC90218A68E8001B2CBF /* pkcs15-tool */,
+				19AEAC9D218A68E9001B2CBF /* sc-hsm-tool */,
+				19AEAC91218A68E8001B2CBF /* westcos-tool */,
 				190ED43B205ADAB40090562B /* DESRCACC100001 */,
 				190ED439205ADA9B0090562B /* opensc.conf */,
 				2F3883CB1CF46FA300F114A7 /* README.md */,
 				2F38839A1CF46C6E00F114A7 /* OpenSCTokenApp */,
 				2F3883B41CF46C9D00F114A7 /* OpenSCToken */,
+				190605122189CA57005B78B2 /* opensc-pkcs11 */,
 				2F3883B11CF46C9D00F114A7 /* Frameworks */,
 				2F3883991CF46C6E00F114A7 /* Products */,
 			);
@@ -106,6 +288,7 @@
 			children = (
 				2F3883981CF46C6E00F114A7 /* OpenSCTokenApp.app */,
 				2F3883B01CF46C9D00F114A7 /* OpenSCToken.appex */,
+				190605112189CA57005B78B2 /* opensc-pkcs11.dylib.bundle */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -134,6 +317,7 @@
 		2F3883B11CF46C9D00F114A7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				190605372189EE4E005B78B2 /* CryptoTokenKit.framework */,
 				191FFFCD1FA7204B009E9DC4 /* libz.tbd */,
 				2F3883B21CF46C9D00F114A7 /* Cocoa.framework */,
 			);
@@ -173,6 +357,23 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		190605102189CA57005B78B2 /* opensc-pkcs11 */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 190605142189CA57005B78B2 /* Build configuration list for PBXNativeTarget "opensc-pkcs11" */;
+			buildPhases = (
+				1906050D2189CA57005B78B2 /* Sources */,
+				1906050E2189CA57005B78B2 /* Frameworks */,
+				1906050F2189CA57005B78B2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "opensc-pkcs11";
+			productName = "opensc-pkcs11";
+			productReference = 190605112189CA57005B78B2 /* opensc-pkcs11.dylib.bundle */;
+			productType = "com.apple.product-type.bundle";
+		};
 		2F3883971CF46C6E00F114A7 /* OpenSCTokenApp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2F3883A91CF46C6F00F114A7 /* Build configuration list for PBXNativeTarget "OpenSCTokenApp" */;
@@ -185,6 +386,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				19AEAC8C218A6689001B2CBF /* PBXTargetDependency */,
 				2F3883BE1CF46C9D00F114A7 /* PBXTargetDependency */,
 			);
 			name = OpenSCTokenApp;
@@ -199,10 +401,13 @@
 				2F3883AC1CF46C9D00F114A7 /* Sources */,
 				2F3883AD1CF46C9D00F114A7 /* Frameworks */,
 				2F3883AE1CF46C9D00F114A7 /* Resources */,
+				19AEAC8E218A6854001B2CBF /* Embed OpenSC Tools */,
+				19844E5B218A7B8D0055A9CC /* Embed opensc-pkcs11 */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				19844E5A218A7AE80055A9CC /* PBXTargetDependency */,
 			);
 			name = OpenSCToken;
 			productName = PIVToken;
@@ -215,9 +420,14 @@
 		2F3883901CF46C6E00F114A7 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0900;
+				LastUpgradeCheck = 1000;
 				ORGANIZATIONNAME = "Libor sykora";
 				TargetAttributes = {
+					190605102189CA57005B78B2 = {
+						CreatedOnToolsVersion = 10.0;
+						DevelopmentTeam = GE9933KY56;
+						ProvisioningStyle = Automatic;
+					};
 					2F3883971CF46C6E00F114A7 = {
 						CreatedOnToolsVersion = 8.0;
 						DevelopmentTeam = GE9933KY56;
@@ -250,11 +460,19 @@
 			targets = (
 				2F3883971CF46C6E00F114A7 /* OpenSCTokenApp */,
 				2F3883AF1CF46C9D00F114A7 /* OpenSCToken */,
+				190605102189CA57005B78B2 /* opensc-pkcs11 */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		1906050F2189CA57005B78B2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2F3883961CF46C6E00F114A7 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -276,6 +494,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		1906050D2189CA57005B78B2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1906052F2189CC71005B78B2 /* framework-pkcs15init.c in Sources */,
+				190605272189CC71005B78B2 /* pkcs11-display.c in Sources */,
+				1906052C2189CC71005B78B2 /* framework-pkcs15.c in Sources */,
+				190605262189CC71005B78B2 /* pkcs11-global.c in Sources */,
+				1906052A2189CC71005B78B2 /* debug.c in Sources */,
+				190605302189CC71005B78B2 /* slot.c in Sources */,
+				1906052D2189CC71005B78B2 /* pkcs11-session.c in Sources */,
+				190605292189CC71005B78B2 /* mechanism.c in Sources */,
+				1906052E2189CC71005B78B2 /* openssl.c in Sources */,
+				190605282189CC71005B78B2 /* misc.c in Sources */,
+				190605312189CC71005B78B2 /* pkcs11-object.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		2F3883941CF46C6E00F114A7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -298,6 +534,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		19844E5A218A7AE80055A9CC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 190605102189CA57005B78B2 /* opensc-pkcs11 */;
+			targetProxy = 19844E59218A7AE80055A9CC /* PBXContainerItemProxy */;
+		};
+		19AEAC8C218A6689001B2CBF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 190605102189CA57005B78B2 /* opensc-pkcs11 */;
+			targetProxy = 19AEAC8B218A6689001B2CBF /* PBXContainerItemProxy */;
+		};
 		2F3883BE1CF46C9D00F114A7 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 2F3883AF1CF46C9D00F114A7 /* OpenSCToken */;
@@ -317,6 +563,36 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		190605152189CA57005B78B2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/OpenSCToken/opensctoken.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				INFOPLIST_FILE = "opensc-pkcs11/Info.plist";
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.opensc-project.mac.opensc-pkcs11";
+				PRODUCT_NAME = "$(TARGET_NAME).dylib";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Debug;
+		};
+		190605162189CA57005B78B2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/OpenSCToken/opensctoken.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
+				INFOPLIST_FILE = "opensc-pkcs11/Info.plist";
+				MACH_O_TYPE = mh_dylib;
+				PRODUCT_BUNDLE_IDENTIFIER = "org.opensc-project.mac.opensc-pkcs11";
+				PRODUCT_NAME = "$(TARGET_NAME).dylib";
+				WRAPPER_EXTENSION = bundle;
+			};
+			name = Release;
+		};
 		2F3883A71CF46C6F00F114A7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -338,6 +614,7 @@
 				);
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				HEADER_SEARCH_PATHS = (
+					$SRCROOT/OpenSC,
 					$SRCROOT/OpenSC/src,
 					$SRCROOT/build/openpace/include/,
 					$SRCROOT/build/openssl/include/,
@@ -367,6 +644,7 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_TREAT_WARNINGS_AS_ERRORS = YES;
 				HEADER_SEARCH_PATHS = (
+					$SRCROOT/OpenSC,
 					$SRCROOT/OpenSC/src,
 					$SRCROOT/build/openpace/include/,
 					$SRCROOT/build/openssl/include/,
@@ -427,6 +705,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		190605142189CA57005B78B2 /* Build configuration list for PBXNativeTarget "opensc-pkcs11" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				190605152189CA57005B78B2 /* Debug */,
+				190605162189CA57005B78B2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		2F3883931CF46C6E00F114A7 /* Build configuration list for PBXProject "OpenSCTokenApp" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
