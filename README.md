@@ -16,9 +16,13 @@ OpenSCToken aims at providing the existing functionality of OpenSC through Crypt
 
 1. Download [the latest release of OpenSCToken](https://github.com/frankmorgner/OpenSCToken/releases/latest)
 2. Open the image (`.dmg` file) and drag `OpenSCToken` to your `Applications`
-3. Opening `OpenSCToken` you'll see an empty application which is needed once to register the token driver for your user account.
+3. Launching `OpenSCToken` shows an empty application and registers the token driver:
 
-When the token driver has been registered in the system, your smart card should be available even if the application is not running (as long as your card is supported by OpenSC).
+```
+sudo -u _securityagent /Applications/OpenSCTokenApp.app/Contents/MacOS/OpenSCTokenApp
+```
+
+When the token driver has been registered, your smart card should be available even if the application is not running (as long as your card is supported by OpenSC).
 
 ## Comparison with [OpenSC.tokend](https://github.com/OpenSC/OpenSC.tokend)
 
@@ -26,7 +30,7 @@ When the token driver has been registered in the system, your smart card should 
 - [x] OpenSCToken has propper support for PIN pad on reader or token
 - [x] OpenSCToken offers easy login with smart card and automatically unlocks the *login keychain*
 - [ ] Tokens are not visible in *Keychain Access* anymore (use `sc_auth`/`security` from command line instead)
-- [ ] Most non-Apple applications do not yet support CryptoTokenKit. If OpenSCToken is used together with OpenSC.tokend, your token will appear twice in Safari and other Apple-apps.
+- [ ] Many non-Apple applications do not yet support CryptoTokenKit. If OpenSCToken is used together with OpenSC.tokend, your token will appear twice in Safari and other Apple-apps.
 
 ## Building OpenSCToken
 
@@ -53,17 +57,17 @@ Once all dependencies are built, the project can be executed and debugged from X
 
 OpenSCToken requires macOS 10.12 or later. For registering the token driver, you have two options:
 
-1. `open build/Applications/OpenSCTokenApp.app` or run `pluginkit -a build/Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex`:
+1. Run `OpenSCTokenApp` or execute `pluginkit -a /Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex`:
 Registers OpenSC in the PlugInKit subsystem for the current user. Your token will be **available after login**. Note that database clean-ups may eventually remove the plug-in.
 
-2. `sudo cp -r build/Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex /System/Library/Frameworks/CryptoTokenKit.framework/PlugIns`:
+2. Execute `sudo -u _securityagent /Applications/OpenSCTokenApp.app/Contents/MacOS/OpenSCTokenApp`:
 Registers OpenSC globally. Your token **will always be available**. Copying the plug-in requires *security integrity protection (SIP)* to be disabled.
 
 ## Configuring OpenSCToken
 
 OpenSCToken supports all configuration options from OpenSC. However, you need to make sure that files to be read or written are available from the token driver's sandbox.
 
-For example, `opensc.conf`, which is read by OpenSC, is available in `OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex/Contents/Resources`. When using configuration options that need to write a file (e.g. `debug_file` or `file_cache_dir`), you need to make sure this is done in the token driver's `Documents` directory (e.g. something like `~/Library/Containers/org.opensc-project.mac.opensctoken.OpenSCTokenApp.OpenSCToken/Data/Documents`). For your convenience, these locations are written to the system log when OpenSCToken is started with a smart card. Use the following commands to view the log:
+For example, `opensc.conf`, which is read by OpenSC, is available in `/Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex/Contents/Resources`. When using configuration options that need to write a file (e.g. `debug_file` or `file_cache_dir`), you need to make sure this is done in the token driver's `Documents` directory (e.g. something like `~/Library/Containers/org.opensc-project.mac.opensctoken.OpenSCTokenApp.OpenSCToken/Data/Documents`). For your convenience, these locations are written to the system log when OpenSCToken is started with a smart card. Use the following commands to view the log:
 
 ```
 sudo log config --mode "private_data:on"
