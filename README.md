@@ -15,8 +15,8 @@ OpenSCToken aims at providing the existing functionality of OpenSC through Crypt
 ## Quickstart
 
 1. Download [the latest release of OpenSCToken](https://github.com/frankmorgner/OpenSCToken/releases/latest)
-2. Open the image (`.dmg` file) and drag `OpenSCToken` to your `Applications`
-3. Launching `OpenSCToken` shows an empty application and registers the token driver:
+2. Open the image (`.dmg` file) and drag *OpenSCTokenApp* to your *Applications*
+3. Launching *OpenSCTokenApp* shows an empty application and registers the token driver:
 
 ```
 sudo -u _securityagent /Applications/OpenSCTokenApp.app/Contents/MacOS/OpenSCTokenApp
@@ -57,11 +57,11 @@ Once all dependencies are built, the project can be executed and debugged from X
 
 OpenSCToken requires macOS 10.12 or later. For registering the token driver, you have two options:
 
-1. Run `OpenSCTokenApp` or execute `pluginkit -a /Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex`:
+1. Run *OpenSCTokenApp* or execute `pluginkit -a /Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex`:
 Registers OpenSC in the PlugInKit subsystem for the current user. Your token will be **available after login**. Note that database clean-ups may eventually remove the plug-in.
 
-2. Execute `sudo -u _securityagent /Applications/OpenSCTokenApp.app/Contents/MacOS/OpenSCTokenApp`:
-Registers OpenSC globally. Your token **will always be available**. Copying the plug-in requires *security integrity protection (SIP)* to be disabled.
+2. Run *OpenSCTokenApp* as SecurityAgent `sudo -u _securityagent /Applications/OpenSCTokenApp.app/Contents/MacOS/OpenSCTokenApp` or execute `sudo -u _securityagent pluginkit -a /Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex`:
+Registers OpenSC globally. Your token **will always be available**.
 
 ## Configuring OpenSCToken
 
