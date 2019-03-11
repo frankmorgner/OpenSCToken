@@ -31,10 +31,10 @@ if ! test -e $BUILDPATH/openpace/$PREFIX/lib/pkgconfig; then
 		git clone --depth=1 https://github.com/frankmorgner/openpace.git
 	fi
 	cd openpace
-	if ! test -e Makefile; then
+	if ! test -e configure; then
 		autoreconf -vis
-		./configure --disable-shared --prefix=$PREFIX --sysconfdir=$RESOURCES --enable-cvcdir=$RESOURCES --enable-x509dir=$RESOURCES CRYPTO_CFLAGS="$OPENSSL_CFLAGS" CRYPTO_LIBS="$OPENSSL_LIBS"
 	fi
+	./configure --disable-shared --prefix=$PREFIX --sysconfdir=$RESOURCES --enable-cvcdir=$RESOURCES --enable-x509dir=$RESOURCES CRYPTO_CFLAGS="$OPENSSL_CFLAGS" CRYPTO_LIBS="$OPENSSL_LIBS"
 	make DESTDIR=$BUILDPATH/openpace install
 	cd ..
 fi
@@ -45,9 +45,9 @@ if ! test -e OpenSC; then
 	git clone --depth=1 https://github.com/OpenSC/OpenSC.git
 fi
 cd OpenSC
-if ! test -e Makefile; then
+if ! test -e configure; then
 	autoreconf -vis
-	./configure --disable-shared --prefix=$PREFIX --sysconfdir=$RESOURCES --disable-pcsc  --enable-cryptotokenkit --disable-notify
 fi
+./configure --disable-shared --prefix=$PREFIX --sysconfdir=$RESOURCES --disable-pcsc  --enable-cryptotokenkit --disable-notify
 make
 cd ..
