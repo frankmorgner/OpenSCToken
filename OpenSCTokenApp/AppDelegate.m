@@ -17,6 +17,13 @@
 	return YES;
 }
 
+- (IBAction)openURL:(NSMenuItem*)sender {
+    NSString *url = [sender toolTip];
+    if (url) {
+         [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
+    }
+}
+
 #if 0
 - (IBAction)openPreferences:(id)sender {
     /* FIXME TextEdit isn't allowed to open opensc.conf */

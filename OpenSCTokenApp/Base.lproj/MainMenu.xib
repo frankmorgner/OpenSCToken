@@ -60,6 +60,37 @@
                         </items>
                     </menu>
                 </menuItem>
+                <menuItem title="Help" id="wpr-3q-Mcd">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <menu key="submenu" title="Help" systemMenu="help" id="F2S-fz-NVQ">
+                        <items>
+                            <menuItem title="OpenSC Wiki" keyEquivalent="?" toolTip="https://github.com/OpenSC/OpenSC/wiki" id="FKE-Sm-Kum" userLabel="OpenSC Wiki">
+                                <connections>
+                                    <action selector="openURL:" target="Voe-Tx-rLC" id="GRr-UK-Gw6"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="KlZ-mA-5zx"/>
+                            <menuItem title="Manuals for OpenSC Configuration" toolTip="http://htmlpreview.github.io/?https://github.com/OpenSC/OpenSC/blob/master/doc/files/files.html" id="GnC-i9-Bpc" userLabel="Manuals for OpenSC Configuration">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="openURL:" target="Voe-Tx-rLC" id="ZM8-jE-rLc"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Manuals for OpenSC Tools" toolTip="http://htmlpreview.github.io/?https://github.com/OpenSC/OpenSC/blob/master/doc/tools/tools.html" id="AWZ-rP-wh4" userLabel="Manuals for OpenSC Tools">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="openURL:" target="Voe-Tx-rLC" id="gwH-nq-iK2"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Report an issue" toolTip="https://github.com/OpenSC/OpenSC/issues" id="azx-dd-abJ" userLabel="Report an issue">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="openURL:" target="Voe-Tx-rLC" id="amG-DW-ZfB"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
             </items>
         </menu>
         <window title="OpenSCToken" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
