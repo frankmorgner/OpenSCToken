@@ -25,7 +25,6 @@
 		190ED43A205ADA9B0090562B /* opensc.conf in Resources */ = {isa = PBXBuildFile; fileRef = 190ED439205ADA9B0090562B /* opensc.conf */; };
 		190ED43C205ADAB40090562B /* DESRCACC100001 in Resources */ = {isa = PBXBuildFile; fileRef = 190ED43B205ADAB40090562B /* DESRCACC100001 */; };
 		191FFFCE1FA7204B009E9DC4 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 191FFFCD1FA7204B009E9DC4 /* libz.tbd */; };
-		19844E5C218A7BE20055A9CC /* opensc-pkcs11.dylib.bundle in Embed opensc-pkcs11 */ = {isa = PBXBuildFile; fileRef = 190605112189CA57005B78B2 /* opensc-pkcs11.dylib.bundle */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		19AEACA5218A68E9001B2CBF /* pkcs15-init in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEAC8F218A68E8001B2CBF /* pkcs15-init */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		19AEACA6218A68E9001B2CBF /* pkcs15-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEAC90218A68E8001B2CBF /* pkcs15-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		19AEACA7218A68E9001B2CBF /* westcos-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEAC91218A68E8001B2CBF /* westcos-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -83,17 +82,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		19844E5B218A7B8D0055A9CC /* Embed opensc-pkcs11 */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 1;
-			files = (
-				19844E5C218A7BE20055A9CC /* opensc-pkcs11.dylib.bundle in Embed opensc-pkcs11 */,
-			);
-			name = "Embed opensc-pkcs11";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		19AEAC8E218A6854001B2CBF /* Embed OpenSC Tools */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -402,7 +390,6 @@
 				2F3883AD1CF46C9D00F114A7 /* Frameworks */,
 				2F3883AE1CF46C9D00F114A7 /* Resources */,
 				19AEAC8E218A6854001B2CBF /* Embed OpenSC Tools */,
-				19844E5B218A7B8D0055A9CC /* Embed opensc-pkcs11 */,
 			);
 			buildRules = (
 			);
