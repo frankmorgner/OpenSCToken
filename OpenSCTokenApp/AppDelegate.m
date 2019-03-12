@@ -9,10 +9,27 @@
 @interface AppDelegate ()
 
 @property (weak) IBOutlet NSWindow *window;
+- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender;
 @end
 
 @implementation AppDelegate
+-(BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)sender {
+	return YES;
+}
 
-
+#if 0
+- (IBAction)openPreferences:(id)sender {
+    /* FIXME TextEdit isn't allowed to open opensc.conf */
+    NSString *builtinPluginsPath = [[NSBundle mainBundle] builtInPlugInsPath];
+    NSString * opensc_conf = [NSString stringWithFormat:@"%@/%@", builtinPluginsPath, @"OpenSCToken.appex/Contents/Resources/opensc.conf"];
+    NSWorkspace *workspace = [NSWorkspace sharedWorkspace];
+    NSURL *textEdit = [NSURL fileURLWithPath:[workspace fullPathForApplication:@"TextEdit"]];
+    if (textEdit) {
+        NSError *error = nil;
+        NSArray *arguments = [NSArray arrayWithObjects:opensc_conf, nil];
+        [workspace launchApplicationAtURL:textEdit options:0 configuration:[NSDictionary dictionaryWithObject:arguments forKey:NSWorkspaceLaunchConfigurationArguments] error:&error];
+    }
+}
+#endif
 
 @end
