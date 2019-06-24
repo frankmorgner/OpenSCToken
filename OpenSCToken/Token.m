@@ -190,7 +190,9 @@
         [items addObject:keyItem];
     }
 
-    instanceID = [NSString stringWithUTF8String:p15card->tokeninfo->serial_number];
+    /* some tokens do not report a serial number */
+    if (p15card->tokeninfo != NULL && p15card->tokeninfo->serial_number != NULL)
+        instanceID = [NSString stringWithUTF8String:p15card->tokeninfo->serial_number];
     p15card->opts.use_pin_cache = 0;
     
     if (self = [super initWithSmartCard:smartCard AID:AID instanceID:instanceID tokenDriver:tokenDriver]) {
