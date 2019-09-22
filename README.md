@@ -16,13 +16,32 @@ OpenSCToken aims at providing the existing functionality of OpenSC through Crypt
 
 1. Download [the latest release of OpenSCToken](https://github.com/frankmorgner/OpenSCToken/releases/latest)
 2. Open the image (`.dmg` file) and drag *OpenSCTokenApp* to your *Applications*
-3. Launching *OpenSCTokenApp* shows an empty application and registers the token driver:
+3. Launching *OpenSCTokenApp* shows an empty application and registers the token driver.
 
-```
-sudo -u _securityagent /Applications/OpenSCTokenApp.app/Contents/MacOS/OpenSCTokenApp
-```
+Now your're ready to use the smart card even if the application is not running (as long as your card is supported by OpenSC).
 
-When the token driver has been registered, your smart card should be available even if the application is not running (as long as your card is supported by OpenSC).
+### Useful Commands
+
+- Disable dialog for pairing a smart card with the current account:
+```
+sc_auth pairing_ui -s disable
+```
+- List available smart cards and paired/unpaired identities:
+```
+sc_auth identities
+```
+- Pair a smart card with your account:
+```
+sc_auth pair ${HASH}
+```
+- Remove paired smart card from your account:
+```
+sc_auth unpair ${HASH}
+```
+- Disable macOS' built-in token driver for the PIV card (Yubikey) to use use OpenSC instead:
+```
+sudo defaults write /Library/Preferences/com.apple.security.smartcard DisabledTokens -array com.apple.CryptoTokenKit.pivtoken
+```
 
 ## Comparison with [OpenSC.tokend](https://github.com/OpenSC/OpenSC.tokend)
 
@@ -102,4 +121,4 @@ The unchecked mechanisms are implemented, but currently untested.
 
 ---
 
-Copyright (C) 2017 Frank Morgner <frankmorgner@gmail.com>
+Copyright (C) 2017-2019 Frank Morgner <frankmorgner@gmail.com>
