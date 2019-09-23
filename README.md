@@ -99,7 +99,7 @@ Tested applications:
 
 - [x] Login to macOS with smart card
 - [x] Unlock *login keychain*
-- [x] Safari (TLS client authentication)
+- [x] Safari, Chrome (TLS client authentication)
 
 Tested Mechanisms:
 
