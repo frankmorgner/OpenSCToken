@@ -27,14 +27,6 @@
 #include "libopensc/pkcs15.h"
 
 
-static struct sc_pkcs15_id dataToId(NSData* data)
-{
-    struct sc_pkcs15_id p15id;
-    p15id.len = [data length];
-    memcpy(p15id.value, [data bytes], p15id.len);
-    return p15id;
-}
-
 static unsigned int algorithmToFlags(TKTokenKeyAlgorithm * algorithm)
 {
     if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionRaw]

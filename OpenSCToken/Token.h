@@ -22,6 +22,37 @@
 
 #include "libopensc/pkcs15.h"
 
+#define TYPE_CERT 0x01
+#define TYPE_PRIV 0x02
+#define TYPE_AUTH 0x03
+
+static NSData* idToData(u8 type, struct sc_pkcs15_id *p15id)
+{
+    NSData *data = nil;
+    if (p15id) {
+        u8 *p = malloc(p15id->len+1);
+        if (p) {
+            *p = type;
+            memcpy(p+1, p15id->value, p15id->len);
+            data = [NSData dataWithBytes:p length:p15id->len+1];
+            free(p);
+        }
+    }
+    return data;
+}
+
+static struct sc_pkcs15_id dataToId(NSData* data)
+{
+    struct sc_pkcs15_id p15id;
+    p15id.len = [data length];
+    memcpy(p15id.value, [data bytes], p15id.len);
+    if (p15id.len > 0) {
+        p15id.len--;
+        memmove(p15id.value, p15id.value+1, p15id.len);
+    }
+    return p15id;
+}
+
 NS_ASSUME_NONNULL_BEGIN
 
 
