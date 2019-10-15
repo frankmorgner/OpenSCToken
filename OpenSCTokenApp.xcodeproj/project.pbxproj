@@ -407,7 +407,7 @@
 		2F3883901CF46C6E00F114A7 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 1000;
+				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = "Libor sykora";
 				TargetAttributes = {
 					190605102189CA57005B78B2 = {
@@ -437,6 +437,7 @@
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
+				English,
 				en,
 				Base,
 			);

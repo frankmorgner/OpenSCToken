@@ -26,7 +26,7 @@
 #define TYPE_PRIV 0x02
 #define TYPE_AUTH 0x03
 
-static NSData* idToData(u8 type, struct sc_pkcs15_id *p15id)
+static NSData* _Nullable idToData(u8 type, struct sc_pkcs15_id * _Nullable p15id)
 {
     NSData *data = nil;
     if (p15id) {
@@ -41,7 +41,7 @@ static NSData* idToData(u8 type, struct sc_pkcs15_id *p15id)
     return data;
 }
 
-static struct sc_pkcs15_id dataToId(NSData* data)
+static struct sc_pkcs15_id dataToId(NSData* _Nonnull data)
 {
     struct sc_pkcs15_id p15id;
     p15id.len = [data length];
