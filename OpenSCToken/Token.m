@@ -123,7 +123,7 @@
             continue;
         }
         NSData* certificateData = [NSData dataWithBytes:(const void *)cert->data.value length:sizeof(unsigned char)*cert->data.len];
-        NSData* certificateID = [NSData dataWithBytes:cert_info->id.value length:cert_info->id.len];
+        NSData* certificateID = idToData(TYPE_CERT, &cert_info->id);
         NSString *certificateName = [NSString stringWithUTF8String:objs[i]->label];
         id certificate = CFBridgingRelease(SecCertificateCreateWithData(kCFAllocatorDefault, (CFDataRef)certificateData));
         if (certificateData == nil || certificateID == nil || certificateName == nil || certificate == NULL) {
@@ -146,7 +146,7 @@
             continue;
         }
         struct sc_pkcs15_prkey_info *prkey_info = (struct sc_pkcs15_prkey_info *) prkey_obj->data;
-        NSData* keyID = [NSData dataWithBytes:prkey_info->id.value length:prkey_info->id.len];
+        NSData* keyID = idToData(TYPE_PRIV, &prkey_info->id);
         NSString *keyName = [NSString stringWithUTF8String:objs[i]->label];
         TKTokenKeychainKey *keyItem = [[TKTokenKeychainKey alloc] initWithCertificate:(__bridge SecCertificateRef)certificate objectID:keyID];
         if (keyID == nil || keyName == nil || keyItem == nil) {
@@ -161,7 +161,7 @@
             constraint = @YES;
         } else {
             /* Any other property list compatible value defined by the implementation of the token extension. Any such constraint is required to stay constant for the entire lifetime of the token. */
-            constraint = [NSData dataWithBytes:(const void *)prkey_obj->auth_id.value length:prkey_obj->auth_id.len];
+            constraint = idToData(TYPE_AUTH, &prkey_obj->auth_id);
         }
 
         if (USAGE_ANY_SIGN & prkey_info->usage) {
