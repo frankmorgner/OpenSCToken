@@ -25,6 +25,8 @@
 
 #include "libopensc/log.h"
 #include "libopensc/pkcs15.h"
+#include "ui/strings.h"
+#include "ui/notify.h"
 
 
 static unsigned int algorithmToFlags(TKTokenKeyAlgorithm * algorithm)
@@ -123,9 +125,21 @@ err:
 
 - (instancetype)initWithSession:(OpenSCTokenSession *)session authID:(NSData *)authID{
     if (self = [super init]) {
+        const char *title = ui_get_str(
+          session.OpenSCToken.ctx,
+          &session.OpenSCToken.p15card->card->reader->atr,
+          session.OpenSCToken.p15card,
+          MD_PINPAD_DLG_MAIN);
+        const char *text = ui_get_str(
+          session.OpenSCToken.ctx,
+          &session.OpenSCToken.p15card->card->reader->atr,
+          session.OpenSCToken.p15card,
+          MD_PINPAD_DLG_CONTENT_USER);
+
+        sc_notify(title, text);
+
         _session = session;
         _authID = authID;
-        /* TODO: Show some dialog to notify the user. Daemons can't show a UI, so we need some external process to do the user interaction for us (e.g. some XPC Service). */
     }
     
     return self;
