@@ -56,9 +56,14 @@ sudo defaults write /Library/Preferences/com.apple.security.smartcard DisabledTo
 Requirements:
 
 - Xcode 8.0 or later; macOS 10.12 SDK or later
+- help2man, gengetopt
 - Code signing credentials
 
 ```
+# Install dependencies
+brew install help2man
+brew install gengetopt
+
 # Checkout OpenSCToken
 git clone http://github.com/frankmorgner/OpenSCToken.git
 
@@ -67,7 +72,7 @@ cd OpenSCToken
 ./bootstrap
 
 # Now build OpenSCTokenApp
-xcodebuild -target OpenSCTokenApp -configuration Release -project OpenSCToken/OpenSCTokenApp.xcodeproj install DSTROOT=${PWD}/build
+xcodebuild -target OpenSCTokenApp -configuration Release -project OpenSCTokenApp.xcodeproj install DSTROOT=${PWD}/build
 ```
 
 Once all dependencies are built, the project can be executed and debugged from Xcode. Running the application, adds OpenSCToken to the system's plug-in registry. After insterting a token, attach to the process `OpenSCToken` for debugging with Xcode.
