@@ -42,6 +42,10 @@ sc_auth unpair ${HASH}
 ```
 sudo defaults write /Library/Preferences/com.apple.security.smartcard DisabledTokens -array com.apple.CryptoTokenKit.pivtoken
 ```
+- Unregister OpenSCToken
+```
+pluginkit -r -i org.opensc-project.mac.opensctoken.OpenSCTokenApp.OpenSCToken
+```
 
 ## Comparison with [OpenSC.tokend](https://github.com/OpenSC/OpenSC.tokend)
 
