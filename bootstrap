@@ -31,7 +31,7 @@ if ! test -e $BUILDPATH/openpace/$PREFIX/lib/pkgconfig; then
 	if ! test -e configure; then
 		autoreconf -vis
 	fi
-	./configure --disable-shared --prefix=$PREFIX --sysconfdir=$RESOURCES --enable-cvcdir=$RESOURCES --enable-x509dir=$RESOURCES CRYPTO_CFLAGS="$OPENSSL_CFLAGS" CRYPTO_LIBS="$OPENSSL_LIBS"
+	./configure --disable-shared --prefix=$PREFIX --sysconfdir=$RESOURCES --enable-cvcdir=$RESOURCES --enable-x509dir=$RESOURCES CRYPTO_CFLAGS="$OPENSSL_CFLAGS" CRYPTO_LIBS="$OPENSSL_LIBS" HELP2MAN=true
 	make DESTDIR=$BUILDPATH/openpace install
 	cd ..
 	export OPENPACE_CFLAGS="`env PKG_CONFIG_PATH=$BUILDPATH/openssl/$PREFIX/lib/pkgconfig:$BUILDPATH/openpace/$PREFIX/lib/pkgconfig PKG_CONFIG_SYSROOT_DIR=$BUILDPATH/openpace pkg-config --static --cflags libeac` $OPENSSL_CFLAGS"
