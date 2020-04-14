@@ -7,34 +7,38 @@ RESOURCES=/Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex/Co
 
 set -ex
 
-if ! test -e $BUILDPATH/openssl/$PREFIX/lib/pkgconfig; then
-	# Build OpenSSL manually, because Apple's binaries are deprecated
-	if ! test -e openssl; then
-		git clone --depth=1 https://github.com/openssl/openssl.git -b OpenSSL_1_0_2-stable
+if -z "$OPENSSL_CFLAGS" -a -z "$OPENSSL_LIBS"; then
+	if ! test -e $BUILDPATH/openssl/$PREFIX/lib/pkgconfig; then
+		# Build OpenSSL manually, because Apple's binaries are deprecated
+		if ! test -e openssl; then
+			git clone --depth=1 https://github.com/openssl/openssl.git -b OpenSSL_1_0_2-stable
+		fi
+		cd openssl
+		KERNEL_BITS=64 ./config --prefix=$PREFIX
+		make update
+		make depend
+		make
+		make INSTALL_PREFIX=$BUILDPATH/openssl install_sw
+		cd ..
 	fi
-	cd openssl
-	KERNEL_BITS=64 ./config --prefix=$PREFIX
-	make update
-	make depend
-	make
-	make INSTALL_PREFIX=$BUILDPATH/openssl install_sw
-	cd ..
+	export OPENSSL_CFLAGS="`env PKG_CONFIG_PATH=$BUILDPATH/openssl/$PREFIX/lib/pkgconfig PKG_CONFIG_SYSROOT_DIR=$BUILDPATH/openssl pkg-config --static --cflags libcrypto`"
+	export OPENSSL_LIBS="`  env PKG_CONFIG_PATH=$BUILDPATH/openssl/$PREFIX/lib/pkgconfig PKG_CONFIG_SYSROOT_DIR=$BUILDPATH/openssl pkg-config --static --libs   libcrypto`"
 fi
-export OPENSSL_CFLAGS="`env PKG_CONFIG_PATH=$BUILDPATH/openssl/$PREFIX/lib/pkgconfig PKG_CONFIG_SYSROOT_DIR=$BUILDPATH/openssl pkg-config --static --cflags libcrypto`"
-export OPENSSL_LIBS="`  env PKG_CONFIG_PATH=$BUILDPATH/openssl/$PREFIX/lib/pkgconfig PKG_CONFIG_SYSROOT_DIR=$BUILDPATH/openssl pkg-config --static --libs   libcrypto`"
 
-if ! test -e $BUILDPATH/openpace/$PREFIX/lib/pkgconfig; then
-	if ! test -e openpace; then
-		git clone --depth=1 https://github.com/frankmorgner/openpace.git
+if -z "$OPENPACE_CFLAGS" -a -z "$OPENPACE_LIBS"; then
+	if ! test -e $BUILDPATH/openpace/$PREFIX/lib/pkgconfig; then
+		if ! test -e openpace; then
+			git clone --depth=1 https://github.com/frankmorgner/openpace.git
+		fi
+		cd openpace
+		if ! test -e configure; then
+			autoreconf -vis
+		fi
+		./configure --disable-shared --prefix=$PREFIX --sysconfdir=$RESOURCES --enable-cvcdir=$RESOURCES --enable-x509dir=$RESOURCES CRYPTO_CFLAGS="$OPENSSL_CFLAGS" CRYPTO_LIBS="$OPENSSL_LIBS" HELP2MAN=/usr/bin/true
+		touch src/cvc-create.1 src/cvc-print.1
+		make DESTDIR=$BUILDPATH/openpace install
+		cd ..
 	fi
-	cd openpace
-	if ! test -e configure; then
-		autoreconf -vis
-	fi
-	./configure --disable-shared --prefix=$PREFIX --sysconfdir=$RESOURCES --enable-cvcdir=$RESOURCES --enable-x509dir=$RESOURCES CRYPTO_CFLAGS="$OPENSSL_CFLAGS" CRYPTO_LIBS="$OPENSSL_LIBS" HELP2MAN=/usr/bin/true
-	touch src/cvc-create.1 src/cvc-print.1
-	make DESTDIR=$BUILDPATH/openpace install
-	cd ..
 	export OPENPACE_CFLAGS="`env PKG_CONFIG_PATH=$BUILDPATH/openssl/$PREFIX/lib/pkgconfig:$BUILDPATH/openpace/$PREFIX/lib/pkgconfig PKG_CONFIG_SYSROOT_DIR=$BUILDPATH/openpace pkg-config --static --cflags libeac` $OPENSSL_CFLAGS"
 	export OPENPACE_LIBS="`  env PKG_CONFIG_PATH=$BUILDPATH/openssl/$PREFIX/lib/pkgconfig:$BUILDPATH/openpace/$PREFIX/lib/pkgconfig PKG_CONFIG_SYSROOT_DIR=$BUILDPATH/openpace pkg-config --static --libs   libeac` $OPENSSL_LIBS"
 fi
