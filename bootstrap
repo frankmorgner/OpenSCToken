@@ -7,7 +7,7 @@ RESOURCES=/Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex/Co
 
 set -ex
 
-if -z "$OPENSSL_CFLAGS" -a -z "$OPENSSL_LIBS"; then
+if [ -z "$OPENSSL_CFLAGS" -a -z "$OPENSSL_LIBS" ] ; then
 	if ! test -e $BUILDPATH/openssl/$PREFIX/lib/pkgconfig; then
 		# Build OpenSSL manually, because Apple's binaries are deprecated
 		if ! test -e openssl; then
@@ -25,7 +25,7 @@ if -z "$OPENSSL_CFLAGS" -a -z "$OPENSSL_LIBS"; then
 	export OPENSSL_LIBS="`  env PKG_CONFIG_PATH=$BUILDPATH/openssl/$PREFIX/lib/pkgconfig PKG_CONFIG_SYSROOT_DIR=$BUILDPATH/openssl pkg-config --static --libs   libcrypto`"
 fi
 
-if -z "$OPENPACE_CFLAGS" -a -z "$OPENPACE_LIBS"; then
+if [ -z "$OPENPACE_CFLAGS" -a -z "$OPENPACE_LIBS" ] ; then
 	if ! test -e $BUILDPATH/openpace/$PREFIX/lib/pkgconfig; then
 		if ! test -e openpace; then
 			git clone --depth=1 https://github.com/frankmorgner/openpace.git
