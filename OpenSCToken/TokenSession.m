@@ -47,7 +47,7 @@ static unsigned int algorithmToFlags(TKTokenKeyAlgorithm * algorithm)
     
     if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA1])
         return SC_ALGORITHM_ECDSA_HASH_SHA1;
-    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureMessageX962SHA224])
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA224])
         return SC_ALGORITHM_ECDSA_HASH_SHA224;
     if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA256])
         return SC_ALGORITHM_ECDSA_HASH_SHA256;
