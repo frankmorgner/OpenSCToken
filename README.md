@@ -85,17 +85,17 @@ Once all dependencies are built, the project can be executed and debugged from X
 
 OpenSCToken requires macOS 10.12 or later. For registering the token driver, you have two options:
 
-1. Run *OpenSCTokenApp* or execute `pluginkit -a /Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex`:
+1. Run *OpenSCTokenApp* or execute `pluginkit -a /Applications/Utilities/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex`:
 Registers OpenSC in the PlugInKit subsystem for the current user. Your token will be **available after login**. Note that database clean-ups may eventually remove the plug-in.
 
-2. Run *OpenSCTokenApp* as SecurityAgent `sudo -u _securityagent /Applications/OpenSCTokenApp.app/Contents/MacOS/OpenSCTokenApp` or execute `sudo -u _securityagent pluginkit -a /Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex`:
+2. Run *OpenSCTokenApp* as SecurityAgent `sudo -u _securityagent /Applications/Utilities/OpenSCTokenApp.app/Contents/MacOS/OpenSCTokenApp` or execute `sudo -u _securityagent pluginkit -a /Applications/Utilities/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex`:
 Registers OpenSC globally. Your token **will always be available**.
 
 ## Configuring OpenSCToken
 
 OpenSCToken supports all configuration options from OpenSC. However, you need to make sure that files to be read or written are available from the token driver's sandbox.
 
-For example, `opensc.conf`, which is read by OpenSC, is available in `/Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex/Contents/Resources`. When using configuration options that need to write a file (e.g. `debug_file` or `file_cache_dir`), you need to make sure this is done in the token driver's `Documents` directory (e.g. something like `~/Library/Containers/org.opensc-project.mac.opensctoken.OpenSCTokenApp.OpenSCToken/Data/Documents`). For your convenience, these locations are written to the system log when OpenSCToken is started with a smart card. Use the following commands to view the log:
+For example, `opensc.conf`, which is read by OpenSC, is available in `/Applications/Utilities/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex/Contents/Resources`. When using configuration options that need to write a file (e.g. `debug_file` or `file_cache_dir`), you need to make sure this is done in the token driver's `Documents` directory (e.g. something like `~/Library/Containers/org.opensc-project.mac.opensctoken.OpenSCTokenApp.OpenSCToken/Data/Documents`). For your convenience, these locations are written to the system log when OpenSCToken is started with a smart card. Use the following commands to view the log:
 
 ```
 sudo log config --mode "private_data:on"

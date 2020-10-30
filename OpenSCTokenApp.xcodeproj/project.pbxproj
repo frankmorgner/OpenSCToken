@@ -650,7 +650,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				INFOPLIST_FILE = OpenSCTokenApp/Info.plist;
-				INSTALL_PATH = "$(LOCAL_APPS_DIR)";
+				INSTALL_PATH = "$(LOCAL_APPS_DIR)/Utilities";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.opensc-project.mac.opensctoken.OpenSCTokenApp";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -661,7 +661,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				INFOPLIST_FILE = OpenSCTokenApp/Info.plist;
-				INSTALL_PATH = "$(LOCAL_APPS_DIR)";
+				INSTALL_PATH = "$(LOCAL_APPS_DIR)/Utilities";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "org.opensc-project.mac.opensctoken.OpenSCTokenApp";
 				PRODUCT_NAME = "$(TARGET_NAME)";

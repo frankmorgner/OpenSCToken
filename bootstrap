@@ -3,7 +3,7 @@
 BUILDPATH=${PWD}/build
 PREFIX=/
 export MACOSX_DEPLOYMENT_TARGET="10.12"
-RESOURCES=/Applications/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex/Contents/Resources
+RESOURCES=/Applications/Utilities/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex/Contents/Resources
 
 set -ex
 
