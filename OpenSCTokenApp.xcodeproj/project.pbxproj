@@ -555,7 +555,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/OpenSCToken/opensctoken.entitlements";
-				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = "opensc-pkcs11/Info.plist";
@@ -570,7 +569,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/OpenSCToken/opensctoken.entitlements";
-				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = "opensc-pkcs11/Info.plist";
@@ -590,6 +588,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = GE9933KY56;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -626,6 +625,7 @@
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = GE9933KY56;
+				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
