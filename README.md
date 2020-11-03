@@ -22,9 +22,9 @@ Now your're ready to use the smart card even if the application is not running (
 
 ### Useful Commands
 
-- Disable dialog for pairing a smart card with the current account:
+- Show location of the registered OpenSCToken
 ```
-sc_auth pairing_ui -s disable
+pluginkit -v -m -D -i org.opensc-project.mac.opensctoken.OpenSCTokenApp.OpenSCToken
 ```
 - List available smart cards and paired/unpaired identities:
 ```
@@ -37,6 +37,10 @@ sc_auth pair ${HASH}
 - Remove paired smart card from your account:
 ```
 sc_auth unpair ${HASH}
+```
+- Disable dialog for pairing a smart card with the current account:
+```
+sc_auth pairing_ui -s disable
 ```
 - Disable macOS' built-in token driver for the PIV card (Yubikey) to use use OpenSC instead:
 ```
