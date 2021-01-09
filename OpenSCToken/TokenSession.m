@@ -246,6 +246,7 @@ err:
                 default:
                     return nil;
             }
+			break;
         default:
             return nil;
     }
