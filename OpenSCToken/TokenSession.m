@@ -19,6 +19,7 @@
 #import <os/log.h>
 #import <Foundation/Foundation.h>
 #import <CryptoTokenKit/CryptoTokenKit.h>
+#import <Security/SecAsn1Coder.h>
 
 #import "Token.h"
 #import "TokenSession.h"
@@ -28,6 +29,17 @@
 #include "ui/strings.h"
 #include "ui/notify.h"
 
+typedef struct {
+    SecAsn1Item r;
+    SecAsn1Item s;
+} RawECDSASignature;
+
+static const SecAsn1Template DerECDSASignatureTemplate[] = {
+    { SEC_ASN1_SEQUENCE, 0, nil, sizeof(RawECDSASignature) },
+    { SEC_ASN1_INTEGER, offsetof(RawECDSASignature, r) },
+    { SEC_ASN1_INTEGER, offsetof(RawECDSASignature, s) },
+    { 0 }
+};
 
 static unsigned int algorithmToFlags(TKTokenKeyAlgorithm * algorithm)
 {
@@ -255,6 +267,27 @@ err:
         return nil;
     }
     [out setLength:(size_t) r];
+    
+    if (prkey_obj->type == SC_PKCS15_TYPE_PRKEY_EC) {
+        SecAsn1CoderRef asn1Coder;
+        SecAsn1CoderCreate(&asn1Coder);
+        
+        SecAsn1Item derOut = {0, nil};
+        uint8 *outBytes = (uint8*)[out bytes];
+        RawECDSASignature rawECDSASignature = {
+            { [out length] / 2, outBytes },
+            { {out length] / 2, outBytes + ([out length] / 2) },
+        };
+        
+        OSStatus ret = SecAsn1EncodeItem(asn1Coder, &rawECDSASignature, DerECDSASignatureTemplate, &derOut);
+        if (ret == errSecSuccess) {
+            out = [NSMutableData dataWithBytes:derOut.Data length:derOut.Length];
+        }
+        else {
+            out = nil;
+        }
+        SecAsn1CoderRelease(asn1Coder);
+    }
     
     return out;
 }
