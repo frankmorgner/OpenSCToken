@@ -277,7 +277,7 @@ err:
         uint8 *outBytes = (uint8*)[out bytes];
         RawECDSASignature rawECDSASignature = {
             { [out length] / 2, outBytes },
-            { {out length] / 2, outBytes + ([out length] / 2) },
+            { [out length] / 2, outBytes + ([out length] / 2) },
         };
         
         OSStatus ret = SecAsn1EncodeItem(asn1Coder, &rawECDSASignature, DerECDSASignatureTemplate, &derOut);
