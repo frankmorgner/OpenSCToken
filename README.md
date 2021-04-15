@@ -110,6 +110,8 @@ sudo log config --mode "private_data:on"
 log stream --predicate 'senderImagePath contains[cd] "OpenSCToken"'
 ```
 
+On macOS Catalina and later, the mode "private_data:on" is not available anymore and instead you to [create and import a logging profile](https://superuser.com/a/1532052).
+
 ## Test Results
 
 Tested applications:
@@ -121,18 +123,14 @@ Tested applications:
 Tested Mechanisms:
 
 - [x] `kSecKeyAlgorithmRSASignatureRaw`
-- [ ] `kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA1`
-- [ ] `kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA224`
-- [ ] `kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA256`
-- [ ] `kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA384`
-- [ ] `kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA512`
-- [ ] `kSecKeyAlgorithmECDSASignatureDigestX962SHA1`
-- [ ] `kSecKeyAlgorithmECDSASignatureMessageX962SHA224`
-- [ ] `kSecKeyAlgorithmECDSASignatureDigestX962SHA256`
-- [ ] `kSecKeyAlgorithmECDSASignatureDigestX962SHA384`
-- [ ] `kSecKeyAlgorithmECDSASignatureDigestX962SHA512`
 - [ ] `kSecKeyAlgorithmRSAEncryptionRaw`
-- [ ] `kSecKeyAlgorithmRSAEncryptionPKCS1`
+- [ ] `kSecKeyAlgorithmECDSASignatureRFC4754`
+- [ ] `kSecKeyAlgorithmECDSASignatureDigestX962`
+- [x] `kSecKeyAlgorithmECDSASignatureDigestX962SHA1`
+- [x] `kSecKeyAlgorithmECDSASignatureDigestX962SHA224`
+- [x] `kSecKeyAlgorithmECDSASignatureDigestX962SHA256`
+- [x] `kSecKeyAlgorithmECDSASignatureDigestX962SHA384`
+- [x] `kSecKeyAlgorithmECDSASignatureDigestX962SHA512`
 
 The unchecked mechanisms are implemented, but currently untested.
 
