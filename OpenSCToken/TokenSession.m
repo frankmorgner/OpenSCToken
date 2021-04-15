@@ -47,44 +47,14 @@ static unsigned int algorithmToFlags(TKTokenKeyAlgorithm * algorithm)
         || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureRaw])
         return SC_ALGORITHM_RSA_RAW;
 
-    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAMessageDigestPKCS1v15SHA1])
-        return SC_ALGORITHM_RSA_PAD_PKCS1 | SC_ALGORITHM_RSA_HASH_SHA1;
-    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAMessageDigestPKCS1v15SHA224])
-        return SC_ALGORITHM_RSA_PAD_PKCS1 | SC_ALGORITHM_RSA_HASH_SHA224;
-    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAMessageDigestPKCS1v15SHA256])
-        return SC_ALGORITHM_RSA_PAD_PKCS1 | SC_ALGORITHM_RSA_HASH_SHA256;
-    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAMessageDigestPKCS1v15SHA384])
-        return SC_ALGORITHM_RSA_PAD_PKCS1 | SC_ALGORITHM_RSA_HASH_SHA384;
-    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAMessageDigestPKCS1v15SHA512])
-        return SC_ALGORITHM_RSA_PAD_PKCS1 | SC_ALGORITHM_RSA_HASH_SHA512;
-
-    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA1]
-        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA224]
-        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA256]
-        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA384]
-        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA512])
-        return SC_ALGORITHM_RSA_PAD_PKCS1 | SC_ALGORITHM_RSA_HASH_NONE;
-
-    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSAMessageDigestX962SHA1])
-        return SC_ALGORITHM_ECDSA_HASH_SHA1;
-    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSAMessageDigestX962SHA224])
-        return SC_ALGORITHM_ECDSA_HASH_SHA224;
-    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSAMessageDigestX962SHA256])
-        return SC_ALGORITHM_ECDSA_HASH_SHA256;
-    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSAMessageDigestX962SHA384])
-        return SC_ALGORITHM_ECDSA_HASH_SHA384;
-    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSAMessageDigestX962SHA512])
-        return SC_ALGORITHM_ECDSA_HASH_SHA512;
-
-    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA1]
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureRFC4754]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA1]
         || [algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA224]
         || [algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA256]
         || [algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA384]
         || [algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA512])
         return SC_ALGORITHM_ECDSA_HASH_NONE;
-
-    if ([algorithm supportsAlgorithm:kSecKeyAlgorithmRSAEncryptionPKCS1])
-        return SC_ALGORITHM_RSA_PAD_PKCS1;
 
     return (unsigned int) -1;
 }
@@ -201,8 +171,11 @@ err:
 #define USAGE_ANY_AGREEMENT (SC_PKCS15_PRKEY_USAGE_DERIVE)
 
 - (BOOL)tokenSession:(TKTokenSession *)session supportsOperation:(TKTokenOperation)operation usingKey:(TKTokenObjectID)keyObjectID algorithm:(TKTokenKeyAlgorithm *)algorithm {
+    sc_log(self.OpenSCToken.ctx, "Check support of %s for key %s", algorithm.description.UTF8String, sc_dump_hex([keyObjectID bytes], [keyObjectID length]));
+
     struct sc_pkcs15_id p15id = dataToId(keyObjectID);
     struct sc_pkcs15_object *prkey_obj = NULL;
+
     if (SC_SUCCESS != sc_pkcs15_find_prkey_by_id(self.OpenSCToken.p15card, &p15id, &prkey_obj))
         return NO;
     
@@ -234,16 +207,21 @@ err:
     }
     if (!alg_info || ((alg_info->flags & minimum_flags) != minimum_flags))
         return NO;
-    
     /* TODO in addition with inspecting the card's flags we should check the
      * TokenInfo's and the private key's supported PKCS#11 mechanisms, see
      * pkcs15_prkey_can_do() in src/pkcs11/framework-pkcs15.c
+     * TODO add more of the supported signature schemes (PSS/OAEP/PKCS1)
      */
     
+    sc_log(self.OpenSCToken.ctx, "Algorithm is supported.");
+
     return YES;
 }
 
 - (NSData *)tokenSession:(TKTokenSession *)session signData:(NSData *)dataToSign usingKey:(TKTokenObjectID)keyObjectID algorithm:(TKTokenKeyAlgorithm *)algorithm error:(NSError * _Nullable __autoreleasing *)error {
+    sc_log(self.OpenSCToken.ctx, "Performing %s with key %s", algorithm.description.UTF8String, sc_dump_hex([keyObjectID bytes], [keyObjectID length]));
+    sc_log_hex(self.OpenSCToken.ctx, "data to sign", [dataToSign bytes], [dataToSign length]);
+
     struct sc_pkcs15_id p15id = dataToId(keyObjectID);
     struct sc_pkcs15_object *prkey_obj = NULL;
     if (SC_SUCCESS != sc_pkcs15_find_prkey_by_id(self.OpenSCToken.p15card, &p15id, &prkey_obj))
@@ -309,6 +287,9 @@ err:
 }
 
 - (NSData *)tokenSession:(TKTokenSession *)session decryptData:(NSData *)ciphertext usingKey:(TKTokenObjectID)keyObjectID algorithm:(TKTokenKeyAlgorithm *)algorithm error:(NSError * _Nullable __autoreleasing *)error {
+    sc_log(self.OpenSCToken.ctx, "Performing %s with key %s", algorithm.description.UTF8String, sc_dump_hex([keyObjectID bytes], [keyObjectID length]));
+    sc_log_hex(self.OpenSCToken.ctx, "cipher text", [ciphertext bytes], [ciphertext length]);
+
     struct sc_pkcs15_id p15id = dataToId(keyObjectID);
     struct sc_pkcs15_object *prkey_obj = NULL;
     if (SC_SUCCESS != sc_pkcs15_find_prkey_by_id(self.OpenSCToken.p15card, &p15id, &prkey_obj))
