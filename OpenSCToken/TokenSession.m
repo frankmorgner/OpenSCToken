@@ -46,31 +46,46 @@ static unsigned int algorithmToFlags(TKTokenKeyAlgorithm * algorithm)
     if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionRaw]
         || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureRaw])
         return SC_ALGORITHM_RSA_RAW;
-    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA1])
+
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAMessageDigestPKCS1v15SHA1])
         return SC_ALGORITHM_RSA_PAD_PKCS1 | SC_ALGORITHM_RSA_HASH_SHA1;
-    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA224])
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAMessageDigestPKCS1v15SHA224])
         return SC_ALGORITHM_RSA_PAD_PKCS1 | SC_ALGORITHM_RSA_HASH_SHA224;
-    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA256])
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAMessageDigestPKCS1v15SHA256])
         return SC_ALGORITHM_RSA_PAD_PKCS1 | SC_ALGORITHM_RSA_HASH_SHA256;
-    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA384])
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAMessageDigestPKCS1v15SHA384])
         return SC_ALGORITHM_RSA_PAD_PKCS1 | SC_ALGORITHM_RSA_HASH_SHA384;
-    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA512])
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAMessageDigestPKCS1v15SHA512])
         return SC_ALGORITHM_RSA_PAD_PKCS1 | SC_ALGORITHM_RSA_HASH_SHA512;
-    
-    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA1])
+
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA1]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA224]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA256]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA384]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA512])
+        return SC_ALGORITHM_RSA_PAD_PKCS1 | SC_ALGORITHM_RSA_HASH_NONE;
+
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSAMessageDigestX962SHA1])
         return SC_ALGORITHM_ECDSA_HASH_SHA1;
-    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA224])
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSAMessageDigestX962SHA224])
         return SC_ALGORITHM_ECDSA_HASH_SHA224;
-    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA256])
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSAMessageDigestX962SHA256])
         return SC_ALGORITHM_ECDSA_HASH_SHA256;
-    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA384])
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSAMessageDigestX962SHA384])
         return SC_ALGORITHM_ECDSA_HASH_SHA384;
-    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA512])
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSAMessageDigestX962SHA512])
         return SC_ALGORITHM_ECDSA_HASH_SHA512;
-    
+
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA1]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA224]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA256]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA384]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA512])
+        return SC_ALGORITHM_ECDSA_HASH_NONE;
+
     if ([algorithm supportsAlgorithm:kSecKeyAlgorithmRSAEncryptionPKCS1])
         return SC_ALGORITHM_RSA_PAD_PKCS1;
-    
+
     return (unsigned int) -1;
 }
 
