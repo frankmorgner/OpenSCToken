@@ -46,6 +46,10 @@ sc_auth pairing_ui -s disable
 ```
 sudo defaults write /Library/Preferences/com.apple.security.smartcard DisabledTokens -array com.apple.CryptoTokenKit.pivtoken
 ```
+- Enable macOS' built-in token driver for the PIV card (Yubikey):
+```
+sudo defaults delete /Library/Preferences/com.apple.security.smartcard DisabledTokens
+```
 - Unregister OpenSCToken
 ```
 pluginkit -r -i org.opensc-project.mac.opensctoken.OpenSCTokenApp.OpenSCToken
@@ -57,7 +61,6 @@ pluginkit -r -i org.opensc-project.mac.opensctoken.OpenSCTokenApp.OpenSCToken
 - [x] OpenSCToken has propper support for PIN pad on reader or token
 - [x] OpenSCToken offers easy login with smart card and automatically unlocks the *login keychain*
 - [ ] Tokens are not visible in *Keychain Access* anymore (use `sc_auth`/`security` from command line instead)
-- [ ] Many non-Apple applications do not yet support CryptoTokenKit. If OpenSCToken is used together with OpenSC.tokend, your token will appear twice in Safari and other Apple-apps.
 
 ## Building OpenSCToken
 
