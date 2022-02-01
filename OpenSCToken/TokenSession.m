@@ -262,7 +262,7 @@ err:
         default:
             return nil;
     }
-    int r = sc_pkcs15_compute_signature(self.OpenSCToken.p15card, prkey_obj, algorithmToFlags(algorithm), [dataToSign bytes], [dataToSign length], (unsigned char *) [out bytes], [out length]);
+    int r = sc_pkcs15_compute_signature(self.OpenSCToken.p15card, prkey_obj, algorithmToFlags(algorithm), [dataToSign bytes], [dataToSign length], (unsigned char *) [out bytes], [out length], NULL);
     if (0 > r) {
         statusToError(r, error);
         return nil;
