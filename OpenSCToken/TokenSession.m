@@ -301,7 +301,7 @@ err:
 
 	unsigned char decrypted[512]; /* FIXME: Will not work for keys above 4096 bits */
 	int r = sc_pkcs15_decipher(self.OpenSCToken.p15card, prkey_obj, algorithmToFlags(algorithm),
-			[ciphertext bytes], [ciphertext length], decrypted, sizeof(decrypted));
+			[ciphertext bytes], [ciphertext length], decrypted, sizeof(decrypted), NULL);
     if (0 > r) {
         statusToError(r, error);
         return nil;
