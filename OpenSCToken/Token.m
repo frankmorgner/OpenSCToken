@@ -116,8 +116,9 @@
         struct sc_pkcs15_cert_info *cert_info = objs[i]->data;
         struct sc_pkcs15_cert *cert = NULL;
         struct sc_pkcs15_object *prkey_obj = NULL;
+        int private_obj = objs[i].flags & SC_PKCS15_CO_FLAG_PRIVATE;
 
-        r = sc_pkcs15_read_certificate(p15card, cert_info, &cert);
+        r = sc_pkcs15_read_certificate(p15card, cert_info, private_obj, &cert);
         if (r) {
             sc_log(ctx, "sc_pkcs15_read_certificate: %s", sc_strerror(r));
             continue;
