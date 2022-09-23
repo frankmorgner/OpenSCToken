@@ -1,0 +1,22 @@
+name: OSX
+
+on:
+  pull_request:
+    paths:
+      - '**.c'
+      - '**.h'
+      - '**.m'
+      - .github/workflows/macos.yml
+      - .github/setup-macos.sh
+      - .github/cleanup-macos.sh
+      - .github/build.sh
+      - '**.am'
+  push:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: .github/setup-macos.sh
+      - run: .github/build.sh
