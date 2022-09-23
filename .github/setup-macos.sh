@@ -2,4 +2,4 @@
 
 set -ex -o xtrace
 
-brew install gengetopt help2man
+brew install automake gengetopt help2man
