@@ -74,6 +74,7 @@ Requirements:
 # Install dependencies
 brew install help2man
 brew install gengetopt
+brew install automake 
 
 # Checkout OpenSCToken
 git clone http://github.com/frankmorgner/OpenSCToken.git
