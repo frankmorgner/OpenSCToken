@@ -50,6 +50,6 @@ cd OpenSC
 if ! test -e configure; then
 	autoreconf -vis
 fi
-./configure --disable-shared --prefix=$PREFIX --sysconfdir=$RESOURCES --disable-pcsc  --enable-cryptotokenkit --disable-notify
+./configure --disable-shared --prefix=$PREFIX --sysconfdir=$RESOURCES --disable-pcsc  --enable-cryptotokenkit
 make
 cd ..
