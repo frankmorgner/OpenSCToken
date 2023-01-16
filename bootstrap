@@ -5,6 +5,12 @@ PREFIX=/
 export MACOSX_DEPLOYMENT_TARGET="10.12"
 RESOURCES=/Applications/Utilities/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex/Contents/Resources
 
+xcode_ver=$(xcodebuild -version | sed -En 's/Xcode[[:space:]](.*)/\1/p')
+base_ver="12.2"
+if [ $(echo -e $base_ver"\n"$xcode_ver | sort -V | head -1) == "$base_ver" ]; then
+	export BUILD_ARM="true"
+fi
+
 set -ex
 
 if [ -z "$OPENSSL_CFLAGS" -a -z "$OPENSSL_LIBS" ] ; then
@@ -14,15 +20,30 @@ if [ -z "$OPENSSL_CFLAGS" -a -z "$OPENSSL_LIBS" ] ; then
 			git clone --depth=1 https://github.com/openssl/openssl.git -b OpenSSL_1_1_1-stable
 		fi
 		cd openssl
-		KERNEL_BITS=64 ./config --prefix=$PREFIX
-		make update
-		make depend
-		make
+		MACHINE=x86_64 ./config no-shared --prefix=$PREFIX
+		make clean
+		make -j 4
 		make DESTDIR=$BUILDPATH/openssl install_sw
+		if test -n "${BUILD_ARM}"; then
+			make clean
+			MACHINE=arm64 KERNEL_BITS=64 ./config no-shared --prefix=$PREFIX
+			make -j 4
+			make DESTDIR=$BUILDPATH/openssl_arm64 install_sw
+			lipo -create $BUILDPATH/openssl_arm64/$PREFIX/lib/libcrypto.a $BUILDPATH/openssl/$PREFIX/lib/libcrypto.a -output libcrypto.a
+			lipo -create $BUILDPATH/openssl_arm64/$PREFIX/lib/libssl.a $BUILDPATH/openssl/$PREFIX/lib/libssl.a -output libssl.a
+			mv libcrypto.a $BUILDPATH/openssl/$PREFIX/lib/libcrypto.a
+			mv libssl.a $BUILDPATH/openssl/$PREFIX/lib/libssl.a
+		fi
 		cd ..
 	fi
 	export OPENSSL_CFLAGS="`env PKG_CONFIG_PATH=$BUILDPATH/openssl/$PREFIX/lib/pkgconfig PKG_CONFIG_SYSROOT_DIR=$BUILDPATH/openssl pkg-config --static --cflags libcrypto`"
 	export OPENSSL_LIBS="`  env PKG_CONFIG_PATH=$BUILDPATH/openssl/$PREFIX/lib/pkgconfig PKG_CONFIG_SYSROOT_DIR=$BUILDPATH/openssl pkg-config --static --libs   libcrypto`"
+fi
+
+if test -n "${BUILD_ARM}"; then
+	export CFLAGS="$CFLAGS -arch x86_64 -arch arm64"
+	export LDFLAGS="$LDFLAGS -arch x86_64 -arch arm64"
+	export OBJCFLAGS=$CFLAGS
 fi
 
 if [ -z "$OPENPACE_CFLAGS" -a -z "$OPENPACE_LIBS" ] ; then
