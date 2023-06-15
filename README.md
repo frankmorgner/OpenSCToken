@@ -2,13 +2,12 @@
 
 CryptoTokenKit is Apple's take on programmatic access to smart cards and other tokens. It provides both low level access to tokens (comparable with PC/SC) and high level access for system wide integration of a token (comparable with Windows Smart Card Minidriver).
 
-For further information about CryptoTokenKit please read the following ressources:
+For further information about smart cards in macOS please read the following ressources:
 
+- [Apple's guide on smart card integration](https://support.apple.com/guide/deployment/depd0b888248) (open the table of contents to access the pages on smart card logon, FileVault usage and more extended options)
 - [`man 8 security`](http://www.manpagez.com/man/1/security/)
 - [`man 8 sc_auth`](http://www.manpagez.com/man/8/sc_auth/)
 - [`man 8 SmartCardServices`](http://www.manpagez.com/man/7/SmartCardServices/)
-- [Use Mandatory Smart Card Authentication](https://support.apple.com/en-us/HT208372)
-- [*Working with Smart Cards: macOS and Security*](http://www.macad.uk/presentations/Richard_Purves_SC.pdf)
 
 OpenSCToken aims at providing the existing functionality of OpenSC through CryptoTokenKit.
 
@@ -116,9 +115,11 @@ On macOS Catalina and later, the mode "private_data:on" is not available anymore
 
 Tested applications:
 
-- [x] Login to macOS with smart card
+- [x] Login to macOS
+- [x] Unlock screen saver
 - [x] Unlock *login keychain*
 - [x] Safari, Chrome, Firefox (TLS client authentication)
+- [x] Unlock *sudo*
 
 Tested Mechanisms:
 
