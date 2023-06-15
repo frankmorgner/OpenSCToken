@@ -59,7 +59,7 @@ static unsigned int algorithmToFlags(TKTokenKeyAlgorithm * algorithm)
     return (unsigned int) -1;
 }
 
-void statusToError(int sc_status, NSError **error)
+static void statusToError(int sc_status, NSError **error)
 {
     if (error != nil) {
         switch (sc_status) {
@@ -75,6 +75,17 @@ void statusToError(int sc_status, NSError **error)
     }
 }
 
+static BOOL sessionNeedsAuthentication(OpenSCTokenSession *session, struct sc_pkcs15_object *obj)
+{
+    /* avoid tracking the actual authentication state and catch possible errors due to obj->user_consent by simply trying to use the key. This will then return the appropriate error to force an additional authenticaion. */
+    if (session && session.smartCard.sensitive == NO && obj && 0 < obj->auth_id.len) {
+        /* Some cards do not support a logout and CTK doesn't support a card reset. Since we want to enforce a PIN verification even though the key is technically unlocked, we do NOT use sc_pkcs15_get_pin_info() here. */
+        return YES;
+    }
+
+    return NO;
+}
+
 static BOOL OpenSCAuthOperationFinishWithError(OpenSCTokenSession *session, NSData *authID, NSString *PIN, NSError **error) {
     
     struct sc_pkcs15_object *pin_obj = NULL;
@@ -87,6 +98,11 @@ static BOOL OpenSCAuthOperationFinishWithError(OpenSCTokenSession *session, NSDa
     if (PIN) {
         pin = [PIN UTF8String];
         pin_len = strlen(pin);
+    }
+    if (0 == pin_len) {
+        /* with pin_len==0, sc_pkcs15_verify_pin() would check if the PIN is already authenticated with sc_pkcs15_get_pin_info(). Since we want to enforce a PIN validation, we don't accept this. */
+        r = SC_ERROR_INVALID_PIN_LENGTH;
+        goto err;
     }
     r = sc_pkcs15_verify_pin(session.OpenSCToken.p15card, pin_obj, (const unsigned char *) pin, pin_len);
     
@@ -226,7 +242,12 @@ err:
     struct sc_pkcs15_object *prkey_obj = NULL;
     if (SC_SUCCESS != sc_pkcs15_find_prkey_by_id(self.OpenSCToken.p15card, &p15id, &prkey_obj))
         return nil;
-    
+
+    if (sessionNeedsAuthentication(self, prkey_obj)) {
+        *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeAuthenticationNeeded userInfo:nil];
+        return nil;
+    }
+
     /* Compute output size */
     NSMutableData *out;
     struct sc_pkcs15_prkey_info *prkey_info = (struct sc_pkcs15_prkey_info *) prkey_obj->data;
@@ -256,6 +277,7 @@ err:
             return nil;
     }
     int r = sc_pkcs15_compute_signature(self.OpenSCToken.p15card, prkey_obj, algorithmToFlags(algorithm), [dataToSign bytes], [dataToSign length], (unsigned char *) [out bytes], [out length], NULL);
+
     if (0 > r) {
         statusToError(r, error);
         return nil;
@@ -294,6 +316,11 @@ err:
     struct sc_pkcs15_object *prkey_obj = NULL;
     if (SC_SUCCESS != sc_pkcs15_find_prkey_by_id(self.OpenSCToken.p15card, &p15id, &prkey_obj))
         return nil;
+    
+    if (sessionNeedsAuthentication(self, prkey_obj)) {
+        *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeAuthenticationNeeded userInfo:nil];
+        return nil;
+    }
 
 	unsigned char decrypted[512]; /* FIXME: Will not work for keys above 4096 bits */
 	int r = sc_pkcs15_decipher(self.OpenSCToken.p15card, prkey_obj, algorithmToFlags(algorithm),
@@ -308,6 +335,14 @@ err:
 
 - (NSData *)tokenSession:(TKTokenSession *)session performKeyExchangeWithPublicKey:(NSData *)otherPartyPublicKeyData usingKey:(TKTokenObjectID)keyObjectID algorithm:(TKTokenKeyAlgorithm *)algorithm parameters:(TKTokenKeyExchangeParameters *)parameters error:(NSError * _Nullable __autoreleasing *)error {
     return nil;
+}
+
+- (void)dealloc {
+    /* logout to avoid the authentication to be misused */
+    if (self.smartCard.sensitive) {
+        if (SC_SUCCESS == sc_logout(self.OpenSCToken.card))
+            self.smartCard.sensitive = NO;
+    }
 }
 
 @end
