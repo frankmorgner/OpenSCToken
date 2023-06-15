@@ -67,6 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithToken:(OpenSCToken *)token;
 @property (readonly) OpenSCToken *OpenSCToken;
+@property BOOL needs_user_consent;
 
 @end
 

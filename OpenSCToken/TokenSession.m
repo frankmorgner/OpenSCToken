@@ -77,9 +77,12 @@ static void statusToError(int sc_status, NSError **error)
 
 static BOOL sessionNeedsAuthentication(OpenSCTokenSession *session, struct sc_pkcs15_object *obj)
 {
-    /* avoid tracking the actual authentication state and catch possible errors due to obj->user_consent by simply trying to use the key. This will then return the appropriate error to force an additional authenticaion. */
     if (session && session.smartCard.sensitive == NO && obj && 0 < obj->auth_id.len) {
         /* Some cards do not support a logout and CTK doesn't support a card reset. Since we want to enforce a PIN verification even though the key is technically unlocked, we do NOT use sc_pkcs15_get_pin_info() here. */
+        if (obj->user_consent)
+            session.needs_user_consent = YES;
+        else
+            session.needs_user_consent = NO;
         return YES;
     }
 
@@ -104,7 +107,24 @@ static BOOL OpenSCAuthOperationFinishWithError(OpenSCTokenSession *session, NSDa
         r = SC_ERROR_INVALID_PIN_LENGTH;
         goto err;
     }
-    r = sc_pkcs15_verify_pin(session.OpenSCToken.p15card, pin_obj, (const unsigned char *) pin, pin_len);
+
+    /*
+     * Do what PKCS#11 would do for keys requiring CKA_ALWAYS_AUTHENTICATE
+     * and CKU_CONTEXT_SPECIFIC login to let driver know this verify will be followed by
+     * a crypto operation.  Card drivers can test for SC_AC_CONTEXT_SPECIFIC
+     * to do any special handling.
+     */
+    if (session.needs_user_consent) {
+        int auth_meth_saved;
+        struct sc_pkcs15_auth_info *pinfo = (struct sc_pkcs15_auth_info *) pin_obj->data;
+
+        auth_meth_saved = pinfo->auth_method;
+
+        pinfo->auth_method = SC_AC_CONTEXT_SPECIFIC;
+        r = sc_pkcs15_verify_pin(session.OpenSCToken.p15card, pin_obj, (const unsigned char *) pin, pin_len);
+        pinfo->auth_method = auth_meth_saved;
+    } else
+        r = sc_pkcs15_verify_pin(session.OpenSCToken.p15card, pin_obj, (const unsigned char *) pin, pin_len);
     
 err:
     if (SC_SUCCESS != r) {
