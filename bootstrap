@@ -49,7 +49,7 @@ fi
 if [ -z "$OPENPACE_CFLAGS" -a -z "$OPENPACE_LIBS" ] ; then
 	if ! test -e $BUILDPATH/openpace/$PREFIX/lib/pkgconfig; then
 		if ! test -e openpace; then
-			git clone --depth=1 https://github.com/frankmorgner/openpace.git -b 1.1.2
+			git clone --depth=1 https://github.com/frankmorgner/openpace.git -b 1.1.3
 		fi
 		cd openpace
 		if ! test -e configure; then
