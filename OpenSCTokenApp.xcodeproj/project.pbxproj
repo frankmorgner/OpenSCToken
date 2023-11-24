@@ -608,7 +608,6 @@
 					$SRCROOT/build/openssl/include/,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.12;
-				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					$SRCROOT/OpenSC/src/libopensc/.libs/libopensc.a,
 					$SRCROOT/build/openpace/lib/libeac.a,
