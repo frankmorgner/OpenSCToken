@@ -118,7 +118,7 @@ Tested applications:
 
 - [x] Login to macOS with smart card
 - [x] Unlock *login keychain*
-- [x] Safari, Chrome (TLS client authentication)
+- [x] Safari, Chrome, Firefox (TLS client authentication)
 
 Tested Mechanisms:
 

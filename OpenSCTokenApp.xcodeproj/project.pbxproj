@@ -413,17 +413,14 @@
 				TargetAttributes = {
 					190605102189CA57005B78B2 = {
 						CreatedOnToolsVersion = 10.0;
-						DevelopmentTeam = GE9933KY56;
 						ProvisioningStyle = Automatic;
 					};
 					2F3883971CF46C6E00F114A7 = {
 						CreatedOnToolsVersion = 8.0;
-						DevelopmentTeam = GE9933KY56;
 						ProvisioningStyle = Automatic;
 					};
 					2F3883AF1CF46C9D00F114A7 = {
 						CreatedOnToolsVersion = 8.0;
-						DevelopmentTeam = GE9933KY56;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Sandbox = {
@@ -556,7 +553,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/OpenSCToken/opensctoken.entitlements";
+				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = GE9933KY56;
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = "opensc-pkcs11/Info.plist";
 				MACH_O_TYPE = mh_dylib;
@@ -570,7 +569,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "$(SRCROOT)/OpenSCToken/opensctoken.entitlements";
+				CODE_SIGN_IDENTITY = "-";
 				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = "";
 				GCC_SYMBOLS_PRIVATE_EXTERN = YES;
 				INFOPLIST_FILE = "opensc-pkcs11/Info.plist";
 				MACH_O_TYPE = mh_dylib;
@@ -649,6 +650,8 @@
 		2F3883AA1CF46C6F00F114A7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				DEVELOPMENT_TEAM = GE9933KY56;
 				INFOPLIST_FILE = OpenSCTokenApp/Info.plist;
 				INSTALL_PATH = "$(LOCAL_APPS_DIR)/Utilities";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -663,6 +666,8 @@
 		2F3883AB1CF46C6F00F114A7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CODE_SIGN_IDENTITY = "-";
+				DEVELOPMENT_TEAM = GE9933KY56;
 				INFOPLIST_FILE = OpenSCTokenApp/Info.plist;
 				INSTALL_PATH = "$(LOCAL_APPS_DIR)/Utilities";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -678,6 +683,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = OpenSCToken/opensctoken.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				DEVELOPMENT_TEAM = GE9933KY56;
 				INFOPLIST_FILE = OpenSCToken/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -693,6 +700,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = OpenSCToken/opensctoken.entitlements;
+				CODE_SIGN_IDENTITY = "-";
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = OpenSCToken/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
