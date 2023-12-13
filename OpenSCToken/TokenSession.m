@@ -102,11 +102,6 @@ static BOOL OpenSCAuthOperationFinishWithError(OpenSCTokenSession *session, NSDa
         pin = [PIN UTF8String];
         pin_len = strlen(pin);
     }
-    if (0 == pin_len) {
-        /* with pin_len==0, sc_pkcs15_verify_pin() would check if the PIN is already authenticated with sc_pkcs15_get_pin_info(). Since we want to enforce a PIN validation, we don't accept this. */
-        r = SC_ERROR_INVALID_PIN_LENGTH;
-        goto err;
-    }
 
     /*
      * Do what PKCS#11 would do for keys requiring CKA_ALWAYS_AUTHENTICATE
