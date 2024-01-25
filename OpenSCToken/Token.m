@@ -58,15 +58,20 @@
     struct sc_aid *aid = NULL;
     struct sc_pkcs15_object *objs[32];
     int r;
-    size_t i, cert_num;
-    NSMutableArray<TKTokenKeychainItem *> *items;
+    size_t i, app_index, cert_num;
+    NSMutableArray<TKTokenKeychainItem *> *items = [[NSMutableArray alloc] init];
     NSString *instanceID = nil;
+    struct token_apps apps;
     
     /* TODO: Move card and p15card to smartCard.context. smartCard.context would automatically be set to nil if the card gets reset or the state gets modified by a different session, see documentation for TKSmartCard */
     
     self.card = NULL;
-    self.p15card = NULL;
     self.ctx = NULL;
+    /* self.apps.p15card allows binding multiple on-card-application. index 0 always contains the "generic" app. */
+    for (app_index = 0; app_index < SC_TOKEN_APPS_MAX_NUM; app_index++) {
+        self.apps.p15card[app_index] = NULL;
+        apps.p15card[app_index] = NULL;
+    }
 
     os_log(OS_LOG_DEFAULT, "%s", OPENSC_SCM_REVISION);
 
@@ -105,110 +110,123 @@
     
     app_generic = sc_pkcs15_get_application_by_type(card, "generic");
     aid = app_generic ? &app_generic->aid : NULL;
-    r = sc_pkcs15_bind(card, aid, &p15card);
-    LOG_TEST_GOTO_ERR(ctx, r, "sc_pkcs15_bind");
     
-    r = sc_pkcs15_get_objects(p15card, SC_PKCS15_TYPE_CERT_X509, objs, sizeof(objs)/(sizeof *objs));
-    LOG_TEST_GOTO_ERR(ctx, r, "sc_pkcs15_get_objects (SC_PKCS15_TYPE_CERT_X509)");
-    cert_num = (size_t) r;
-    items = [NSMutableArray arrayWithCapacity:cert_num];
-    for (i = 0; i < cert_num; i++) {
-        struct sc_pkcs15_cert_info *cert_info = objs[i]->data;
-        struct sc_pkcs15_cert *cert = NULL;
-        struct sc_pkcs15_object *prkey_obj = NULL;
-        int private_obj = objs[i]->flags & SC_PKCS15_CO_FLAG_PRIVATE;
-
-        r = sc_pkcs15_read_certificate(p15card, cert_info, private_obj, &cert);
-        if (r) {
-            sc_log(ctx, "sc_pkcs15_read_certificate: %s", sc_strerror(r));
-            continue;
-        }
-        NSData* certificateData = [NSData dataWithBytes:(const void *)cert->data.value length:sizeof(unsigned char)*cert->data.len];
-        NSData* certificateID = idToData(TYPE_CERT, &cert_info->id);
-        NSString *certificateName = [NSString stringWithUTF8String:objs[i]->label];
-        id certificate = CFBridgingRelease(SecCertificateCreateWithData(kCFAllocatorDefault, (CFDataRef)certificateData));
-        if (certificateData == nil || certificateID == nil || certificateName == nil || certificate == NULL) {
-            sc_pkcs15_free_certificate(cert);
-            continue;
-        }
-        TKTokenKeychainCertificate *certificateItem = [[TKTokenKeychainCertificate alloc] initWithCertificate:(__bridge SecCertificateRef)certificate objectID:certificateID];
-        if (certificateItem == nil) {
-            sc_pkcs15_free_certificate(cert);
-            continue;
-        }
-        [certificateItem setName:certificateName];
-        [items addObject:certificateItem];
-        sc_pkcs15_free_certificate(cert);
-
-        // Create key item.
-        r = sc_pkcs15_find_prkey_by_id(p15card, &cert_info->id, &prkey_obj);
-        if (r) {
-            sc_log(ctx, "sc_pkcs15_find_prkey_by_id: %s", sc_strerror(r));
-            continue;
-        }
-        struct sc_pkcs15_prkey_info *prkey_info = (struct sc_pkcs15_prkey_info *) prkey_obj->data;
-        NSData* keyID = idToData(TYPE_PRIV, &prkey_info->id);
-        NSString *keyName = [NSString stringWithUTF8String:objs[i]->label];
-        TKTokenKeychainKey *keyItem = [[TKTokenKeychainKey alloc] initWithCertificate:(__bridge SecCertificateRef)certificate objectID:keyID];
-        if (keyID == nil || keyName == nil || keyItem == nil) {
-            continue;
-        }
-        [keyItem setName:keyName];
-
-        NSMutableDictionary<NSNumber *, TKTokenOperationConstraint> *constraints = [NSMutableDictionary dictionary];
-        TKTokenOperationConstraint constraint;
-        if (prkey_obj->auth_id.len == 0) {
-            /* true, indicating that the operation is always allowed, without any authentication necessary. */
-            constraint = @YES;
-        } else {
-            /* Any other property list compatible value defined by the implementation of the token extension. Any such constraint is required to stay constant for the entire lifetime of the token. */
-            constraint = idToData(TYPE_AUTH, &prkey_obj->auth_id);
-        }
-
-        if (USAGE_ANY_SIGN & prkey_info->usage) {
-            keyItem.canSign = YES;
-            constraints[@(TKTokenOperationSignData)] = constraint;
-        } else {
-            keyItem.canSign = NO;
-        }
-        keyItem.suitableForLogin = keyItem.canSign;
+    /* Bind all applications starting with the "generic" one */
+    for (app_index = 0; app_index < SC_TOKEN_APPS_MAX_NUM; app_index++) {
+        r = sc_pkcs15_bind(card, aid, &p15card);
+        apps.p15card[app_index] = p15card;
+        LOG_TEST_GOTO_ERR(ctx, r, "sc_pkcs15_bind");
         
-        if (USAGE_ANY_DECIPHER & prkey_info->usage) {
-            keyItem.canDecrypt = YES;
-            constraints[@(TKTokenOperationDecryptData)] = constraint;
-        } else {
-            keyItem.canDecrypt = NO;
+        r = sc_pkcs15_get_objects(p15card, SC_PKCS15_TYPE_CERT_X509, objs, sizeof(objs)/(sizeof *objs));
+        LOG_TEST_GOTO_ERR(ctx, r, "sc_pkcs15_get_objects (SC_PKCS15_TYPE_CERT_X509)");
+        cert_num = (size_t) r;
+        for (i = 0; i < cert_num; i++) {
+            struct sc_pkcs15_cert_info *cert_info = objs[i]->data;
+            struct sc_pkcs15_cert *cert = NULL;
+            struct sc_pkcs15_object *prkey_obj = NULL;
+            int private_obj = objs[i]->flags & SC_PKCS15_CO_FLAG_PRIVATE;
+            
+            r = sc_pkcs15_read_certificate(p15card, cert_info, private_obj, &cert);
+            if (r) {
+                sc_log(ctx, "sc_pkcs15_read_certificate: %s", sc_strerror(r));
+                continue;
+            }
+            NSData* certificateData = [NSData dataWithBytes:(const void *)cert->data.value length:sizeof(unsigned char)*cert->data.len];
+            NSData* certificateID = idToData(app_index, TYPE_CERT, &cert_info->id);
+            NSString *certificateName = [NSString stringWithUTF8String:objs[i]->label];
+            id certificate = CFBridgingRelease(SecCertificateCreateWithData(kCFAllocatorDefault, (CFDataRef)certificateData));
+            if (certificateData == nil || certificateID == nil || certificateName == nil || certificate == NULL) {
+                sc_pkcs15_free_certificate(cert);
+                continue;
+            }
+            TKTokenKeychainCertificate *certificateItem = [[TKTokenKeychainCertificate alloc] initWithCertificate:(__bridge SecCertificateRef)certificate objectID:certificateID];
+            if (certificateItem == nil) {
+                sc_pkcs15_free_certificate(cert);
+                continue;
+            }
+            [certificateItem setName:certificateName];
+            [items addObject:certificateItem];
+            sc_pkcs15_free_certificate(cert);
+            
+            // Create key item.
+            r = sc_pkcs15_find_prkey_by_id(p15card, &cert_info->id, &prkey_obj);
+            if (r) {
+                sc_log(ctx, "sc_pkcs15_find_prkey_by_id: %s", sc_strerror(r));
+                continue;
+            }
+            struct sc_pkcs15_prkey_info *prkey_info = (struct sc_pkcs15_prkey_info *) prkey_obj->data;
+            NSData* keyID = idToData(app_index, TYPE_PRIV, &prkey_info->id);
+            NSString *keyName = [NSString stringWithUTF8String:objs[i]->label];
+            TKTokenKeychainKey *keyItem = [[TKTokenKeychainKey alloc] initWithCertificate:(__bridge SecCertificateRef)certificate objectID:keyID];
+            if (keyID == nil || keyName == nil || keyItem == nil) {
+                continue;
+            }
+            [keyItem setName:keyName];
+            
+            NSMutableDictionary<NSNumber *, TKTokenOperationConstraint> *constraints = [NSMutableDictionary dictionary];
+            TKTokenOperationConstraint constraint;
+            if (prkey_obj->auth_id.len == 0) {
+                /* true, indicating that the operation is always allowed, without any authentication necessary. */
+                constraint = @YES;
+            } else {
+                /* Any other property list compatible value defined by the implementation of the token extension. Any such constraint is required to stay constant for the entire lifetime of the token. */
+                constraint = idToData(app_index, TYPE_AUTH, &prkey_obj->auth_id);
+            }
+            
+            if (USAGE_ANY_SIGN & prkey_info->usage) {
+                keyItem.canSign = YES;
+                constraints[@(TKTokenOperationSignData)] = constraint;
+            } else {
+                keyItem.canSign = NO;
+            }
+            keyItem.suitableForLogin = keyItem.canSign;
+            
+            if (USAGE_ANY_DECIPHER & prkey_info->usage) {
+                keyItem.canDecrypt = YES;
+                constraints[@(TKTokenOperationDecryptData)] = constraint;
+            } else {
+                keyItem.canDecrypt = NO;
+            }
+            
+            if (USAGE_ANY_AGREEMENT & prkey_info->usage) {
+                keyItem.canPerformKeyExchange = YES;
+                constraints[@(TKTokenOperationPerformKeyExchange)] = constraint;
+            } else {
+                keyItem.canPerformKeyExchange = NO;
+            }
+            
+            keyItem.constraints = constraints;
+            [items addObject:keyItem];
         }
         
-        if (USAGE_ANY_AGREEMENT & prkey_info->usage) {
-            keyItem.canPerformKeyExchange = YES;
-            constraints[@(TKTokenOperationPerformKeyExchange)] = constraint;
-        } else {
-            keyItem.canPerformKeyExchange = NO;
-        }
-
-        keyItem.constraints = constraints;
-        [items addObject:keyItem];
+        /* some tokens do not report a serial number */
+        if (p15card->tokeninfo != NULL && p15card->tokeninfo->serial_number != NULL)
+            instanceID = [NSString stringWithUTF8String:p15card->tokeninfo->serial_number];
+        p15card->opts.use_pin_cache = 0;
+        
+        /* find the next application. Note that the "generic" application is at index 0, which means that the apps from card->app are taking the **subsequent** slots */
+        if (app_index >= card->app_count)
+            break;
+        aid = &card->app[app_index]->aid;
+        app_index++;
+        /* go to the beginning of the loop and try to bind the next application */
+        p15card = NULL;
     }
-
-    /* some tokens do not report a serial number */
-    if (p15card->tokeninfo != NULL && p15card->tokeninfo->serial_number != NULL)
-        instanceID = [NSString stringWithUTF8String:p15card->tokeninfo->serial_number];
-    p15card->opts.use_pin_cache = 0;
     
     if (self = [super initWithSmartCard:smartCard AID:AID instanceID:instanceID tokenDriver:tokenDriver]) {
         [self.keychainContents fillWithItems:items];
-        
         self.ctx = ctx;
         self.card = card;
-        self.p15card = p15card;
+        self.apps = apps;
     } else {
         goto err;
     }
     
 err:
-    if (!self.p15card && p15card)
-        sc_pkcs15_card_free(p15card);
+    for (app_index = 0; app_index < SC_TOKEN_APPS_MAX_NUM; app_index++) {
+        if (!self.apps.p15card[app_index] && apps.p15card[app_index])
+        sc_pkcs15_card_free(apps.p15card[app_index]);
+    }
     if (!self.card && card)
         sc_disconnect_card(card);
     if (!self.ctx && ctx)
@@ -217,11 +235,13 @@ err:
 }
 
 - (void)dealloc {
-    sc_pkcs15_card_free(self.p15card);
+    for (size_t app_index = 0; app_index < SC_TOKEN_APPS_MAX_NUM; app_index++) {
+        sc_pkcs15_card_free(self.apps.p15card[app_index]);
+        self.apps.p15card[app_index] = NULL;
+    }
     sc_disconnect_card(self.card);
     sc_release_context(self.ctx);
     self.card = NULL;
-    self.p15card = NULL;
     self.ctx = NULL;
 }
 

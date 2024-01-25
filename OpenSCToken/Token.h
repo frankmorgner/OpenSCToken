@@ -22,33 +22,43 @@
 
 #include "libopensc/pkcs15.h"
 
+/* in sync with SC_PKCS11_FRAMEWORK_DATA_MAX_NUM */
+#define SC_TOKEN_APPS_MAX_NUM    4
+struct token_apps {
+    struct sc_pkcs15_card * _Nullable p15card[SC_TOKEN_APPS_MAX_NUM];
+};
+
 #define TYPE_CERT 0x01
 #define TYPE_PRIV 0x02
 #define TYPE_AUTH 0x03
 
-static NSData* _Nullable idToData(u8 type, struct sc_pkcs15_id * _Nullable p15id)
+/* The converted data consists of app_index+type+p15id. This allows identifying which on-card-application has this object if there are multiple applications. And this allows differentiating different types of objects with the same p15id. */
+static NSData* _Nullable idToData(u8 index, u8 type, struct sc_pkcs15_id * _Nullable p15id)
 {
     NSData *data = nil;
     if (p15id) {
-        u8 *p = malloc(p15id->len+1);
+        u8 *p = malloc(p15id->len+2);
         if (p) {
-            *p = type;
-            memcpy(p+1, p15id->value, p15id->len);
-            data = [NSData dataWithBytes:p length:p15id->len+1];
+            p[0] = index;
+            p[1] = type;
+            memcpy(&p[2], p15id->value, p15id->len);
+            data = [NSData dataWithBytes:p length:p15id->len+2];
             free(p);
         }
     }
     return data;
 }
 
-static struct sc_pkcs15_id dataToId(NSData* _Nonnull data)
+static struct sc_pkcs15_id dataToId(NSData* _Nonnull data, u8 * _Nullable index)
 {
-    struct sc_pkcs15_id p15id;
-    p15id.len = [data length];
-    memcpy(p15id.value, [data bytes], p15id.len);
-    if (p15id.len > 0) {
-        p15id.len--;
-        memmove(p15id.value, p15id.value+1, p15id.len);
+    struct sc_pkcs15_id p15id = {0};
+    size_t data_len = [data length];
+    const unsigned char *p = [data bytes];
+    if (data_len > 1 && p) {
+        if (index)
+            *index = p[0];
+        memcpy(p15id.value, &p[2], data_len-2);
+        p15id.len = data_len-2;
     }
     return p15id;
 }
@@ -78,7 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly) OpenSCTokenDriver *driver;
 @property (nonatomic, assign, nullable) struct sc_context *ctx;
 @property (nonatomic, assign, nullable) struct sc_card *card;
-@property (nonatomic, assign, nullable) struct sc_pkcs15_card *p15card;
+@property (nonatomic, assign) struct token_apps apps;
 
 @end
 

@@ -92,8 +92,9 @@ static BOOL sessionNeedsAuthentication(OpenSCTokenSession *session, struct sc_pk
 static BOOL OpenSCAuthOperationFinishWithError(OpenSCTokenSession *session, NSData *authID, NSString *PIN, NSError **error) {
     
     struct sc_pkcs15_object *pin_obj = NULL;
-    struct sc_pkcs15_id p15id = dataToId(authID);
-    int r = sc_pkcs15_find_pin_by_auth_id(session.OpenSCToken.p15card, &p15id, &pin_obj);
+    u8 app_index = 0;
+    struct sc_pkcs15_id p15id = dataToId(authID, &app_index);
+    int r = sc_pkcs15_find_pin_by_auth_id(session.OpenSCToken.apps.p15card[app_index], &p15id, &pin_obj);
     LOG_TEST_GOTO_ERR(session.OpenSCToken.ctx, r, "Could not find PIN object");
     
     const char *pin = NULL;
@@ -116,10 +117,10 @@ static BOOL OpenSCAuthOperationFinishWithError(OpenSCTokenSession *session, NSDa
         auth_meth_saved = pinfo->auth_method;
 
         pinfo->auth_method = SC_AC_CONTEXT_SPECIFIC;
-        r = sc_pkcs15_verify_pin(session.OpenSCToken.p15card, pin_obj, (const unsigned char *) pin, pin_len);
+        r = sc_pkcs15_verify_pin(session.OpenSCToken.apps.p15card[app_index], pin_obj, (const unsigned char *) pin, pin_len);
         pinfo->auth_method = auth_meth_saved;
     } else
-        r = sc_pkcs15_verify_pin(session.OpenSCToken.p15card, pin_obj, (const unsigned char *) pin, pin_len);
+        r = sc_pkcs15_verify_pin(session.OpenSCToken.apps.p15card[app_index], pin_obj, (const unsigned char *) pin, pin_len);
     
 err:
     if (SC_SUCCESS != r) {
@@ -153,15 +154,17 @@ err:
 
 - (instancetype)initWithSession:(OpenSCTokenSession *)session authID:(NSData *)authID{
     if (self = [super init]) {
+        u8 app_index = 0;
+        struct sc_pkcs15_id p15id = dataToId(authID, &app_index);
         const char *title = ui_get_str(
           session.OpenSCToken.ctx,
-          &session.OpenSCToken.p15card->card->reader->atr,
-          session.OpenSCToken.p15card,
+          &session.OpenSCToken.apps.p15card[app_index]->card->reader->atr,
+          session.OpenSCToken.apps.p15card[app_index],
           MD_PINPAD_DLG_MAIN);
         const char *text = ui_get_str(
           session.OpenSCToken.ctx,
-          &session.OpenSCToken.p15card->card->reader->atr,
-          session.OpenSCToken.p15card,
+          &session.OpenSCToken.apps.p15card[app_index]->card->reader->atr,
+          session.OpenSCToken.apps.p15card[app_index],
           MD_PINPAD_DLG_CONTENT_USER);
 
         sc_notify(title, text);
@@ -189,8 +192,10 @@ err:
 }
 
 - (TKTokenAuthOperation *)tokenSession:(TKTokenSession *)session beginAuthForOperation:(TKTokenOperation)operation constraint:(TKTokenOperationConstraint)constraint error:(NSError * _Nullable __autoreleasing *)error {
-    if ((self.OpenSCToken.p15card->card->reader->capabilities & SC_READER_CAP_PIN_PAD)
-        || (self.OpenSCToken.p15card->card->caps & SC_CARD_CAP_PROTECTED_AUTHENTICATION_PATH))
+    u8 app_index = 0;
+    struct sc_pkcs15_id p15id = dataToId(constraint, &app_index);
+    if ((self.OpenSCToken.apps.p15card[app_index]->card->reader->capabilities & SC_READER_CAP_PIN_PAD)
+        || (self.OpenSCToken.apps.p15card[app_index]->card->caps & SC_CARD_CAP_PROTECTED_AUTHENTICATION_PATH))
         return [[OpenSCPINPadAuthOperation alloc] initWithSession:self authID:constraint];
     else
         return [[OpenSCAuthOperation alloc] initWithSession:self authID:constraint];
@@ -204,10 +209,11 @@ err:
 - (BOOL)tokenSession:(TKTokenSession *)session supportsOperation:(TKTokenOperation)operation usingKey:(TKTokenObjectID)keyObjectID algorithm:(TKTokenKeyAlgorithm *)algorithm {
     sc_log(self.OpenSCToken.ctx, "Check support of %s for key %s", algorithm.description.UTF8String, sc_dump_hex([keyObjectID bytes], [keyObjectID length]));
 
-    struct sc_pkcs15_id p15id = dataToId(keyObjectID);
+    u8 app_index = 0;
+    struct sc_pkcs15_id p15id = dataToId(keyObjectID, &app_index);
     struct sc_pkcs15_object *prkey_obj = NULL;
 
-    if (SC_SUCCESS != sc_pkcs15_find_prkey_by_id(self.OpenSCToken.p15card, &p15id, &prkey_obj))
+    if (SC_SUCCESS != sc_pkcs15_find_prkey_by_id(self.OpenSCToken.apps.p15card[app_index], &p15id, &prkey_obj))
         return NO;
     
     struct sc_pkcs15_prkey_info *prkey_info = (struct sc_pkcs15_prkey_info *) prkey_obj->data;
@@ -253,9 +259,10 @@ err:
     sc_log(self.OpenSCToken.ctx, "Performing %s with key %s", algorithm.description.UTF8String, sc_dump_hex([keyObjectID bytes], [keyObjectID length]));
     sc_log_hex(self.OpenSCToken.ctx, "data to sign", [dataToSign bytes], [dataToSign length]);
 
-    struct sc_pkcs15_id p15id = dataToId(keyObjectID);
+    u8 app_index = 0;
+    struct sc_pkcs15_id p15id = dataToId(keyObjectID, &app_index);
     struct sc_pkcs15_object *prkey_obj = NULL;
-    if (SC_SUCCESS != sc_pkcs15_find_prkey_by_id(self.OpenSCToken.p15card, &p15id, &prkey_obj))
+    if (SC_SUCCESS != sc_pkcs15_find_prkey_by_id(self.OpenSCToken.apps.p15card[app_index], &p15id, &prkey_obj))
         return nil;
 
     if (sessionNeedsAuthentication(self, prkey_obj)) {
@@ -291,7 +298,7 @@ err:
         default:
             return nil;
     }
-    int r = sc_pkcs15_compute_signature(self.OpenSCToken.p15card, prkey_obj, algorithmToFlags(algorithm), [dataToSign bytes], [dataToSign length], (unsigned char *) [out bytes], [out length], NULL);
+    int r = sc_pkcs15_compute_signature(self.OpenSCToken.apps.p15card[app_index], prkey_obj, algorithmToFlags(algorithm), [dataToSign bytes], [dataToSign length], (unsigned char *) [out bytes], [out length], NULL);
 
     if (0 > r) {
         statusToError(r, error);
@@ -327,9 +334,10 @@ err:
     sc_log(self.OpenSCToken.ctx, "Performing %s with key %s", algorithm.description.UTF8String, sc_dump_hex([keyObjectID bytes], [keyObjectID length]));
     sc_log_hex(self.OpenSCToken.ctx, "cipher text", [ciphertext bytes], [ciphertext length]);
 
-    struct sc_pkcs15_id p15id = dataToId(keyObjectID);
+    u8 app_index = 0;
+    struct sc_pkcs15_id p15id = dataToId(keyObjectID, &app_index);
     struct sc_pkcs15_object *prkey_obj = NULL;
-    if (SC_SUCCESS != sc_pkcs15_find_prkey_by_id(self.OpenSCToken.p15card, &p15id, &prkey_obj))
+    if (SC_SUCCESS != sc_pkcs15_find_prkey_by_id(self.OpenSCToken.apps.p15card[app_index], &p15id, &prkey_obj))
         return nil;
     
     if (sessionNeedsAuthentication(self, prkey_obj)) {
@@ -338,7 +346,7 @@ err:
     }
 
 	unsigned char decrypted[512]; /* FIXME: Will not work for keys above 4096 bits */
-	int r = sc_pkcs15_decipher(self.OpenSCToken.p15card, prkey_obj, algorithmToFlags(algorithm),
+	int r = sc_pkcs15_decipher(self.OpenSCToken.apps.p15card[app_index], prkey_obj, algorithmToFlags(algorithm),
 			[ciphertext bytes], [ciphertext length], decrypted, sizeof(decrypted), NULL);
     if (0 > r) {
         statusToError(r, error);
