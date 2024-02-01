@@ -2,7 +2,7 @@
 
 BUILDPATH=${PWD}/build
 PREFIX=/
-export MACOSX_DEPLOYMENT_TARGET="10.12"
+export MACOSX_DEPLOYMENT_TARGET="10.13"
 RESOURCES=/Applications/Utilities/OpenSCTokenApp.app/Contents/PlugIns/OpenSCToken.appex/Contents/Resources
 
 xcode_ver=$(xcodebuild -version | sed -En 's/Xcode[[:space:]](.*)/\1/p')
