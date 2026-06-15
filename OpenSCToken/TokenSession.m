@@ -254,20 +254,43 @@ err:
             return NO;
     }
     
+    unsigned long ec_ext_flags = 0;
+    int rsa_flags = 0, ec_flags = 0;
+    /* For now, we just OR all the algorithm specific
+     * flags, based on the assumption that cards don't
+     * support different modes for different key *sizes*. */
+    size_t num = self.OpenSCToken.card->algorithm_count;
+    sc_algorithm_info_t *alg_info = self.OpenSCToken.card->algorithms;
+    while (num--) {
+        switch (alg_info->algorithm) {
+            case SC_ALGORITHM_RSA:
+                if (alg_info->key_length == prkey_info->modulus_length) {
+                    rsa_flags |= alg_info->flags;
+                }
+                break;
+            case SC_ALGORITHM_EC:
+                if (alg_info->key_length == prkey_info->field_length) {
+                    ec_flags |= alg_info->flags;
+                    ec_ext_flags |= alg_info->u._ec.ext_flags;
+                }
+                break;
+        }
+        alg_info++;
+    }
+
     unsigned int minimum_flags = algorithmToFlags(algorithm);
-    sc_algorithm_info_t *alg_info;
     switch (prkey_obj->type) {
         case SC_PKCS15_TYPE_PRKEY_RSA:
-            alg_info = sc_card_find_rsa_alg(self.OpenSCToken.card, (unsigned int) prkey_info->modulus_length);
+            if ((rsa_flags & minimum_flags) != minimum_flags)
+                return NO;
             break;
         case SC_PKCS15_TYPE_PRKEY_EC:
-            alg_info = sc_card_find_ec_alg(self.OpenSCToken.card, (unsigned int) prkey_info->field_length, NULL);
+            if ((ec_flags & minimum_flags) != minimum_flags)
+                return NO;
             break;
         default:
             return NO;
     }
-    if (!alg_info || ((alg_info->flags & minimum_flags) != minimum_flags))
-        return NO;
 
     if ([algorithm isAlgorithm:kSecKeyAlgorithmECIESEncryptionStandardX963SHA1AESGCM]
         || [algorithm isAlgorithm:kSecKeyAlgorithmECIESEncryptionStandardX963SHA224AESGCM]
