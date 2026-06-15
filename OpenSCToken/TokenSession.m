@@ -20,6 +20,8 @@
 #import <Foundation/Foundation.h>
 #import <CryptoTokenKit/CryptoTokenKit.h>
 #import <Security/SecAsn1Coder.h>
+#import <CommonCrypto/CommonDigest.h>
+#import <Security/Security.h>
 
 #import "Token.h"
 #import "TokenSession.h"
@@ -56,6 +58,22 @@ static unsigned int algorithmToFlags(TKTokenKeyAlgorithm * algorithm)
         || [algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA512])
         return SC_ALGORITHM_ECDSA_HASH_NONE;
 
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeStandard]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeStandardX963SHA1]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeStandardX963SHA224]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeStandardX963SHA256]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeStandardX963SHA384]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeStandardX963SHA512])
+        return SC_ALGORITHM_ECDH_CDH_RAW;
+
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeCofactor]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeCofactorX963SHA1]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeCofactorX963SHA224]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeCofactorX963SHA256]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeCofactorX963SHA384]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeCofactorX963SHA512])
+        return SC_ALGORITHM_ECDH_CDH_RAW;
+
     return (unsigned int) -1;
 }
 
@@ -72,6 +90,14 @@ static void statusToError(int sc_status, NSError **error)
                 *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeAuthenticationFailed userInfo:nil];
                 break;
         }
+        /* TKErrorCodeBadParameter
+           TKErrorCodeNotImplemented
+           TKErrorCodeObjectNotFound
+           TKErrorCodeAuthenticationNeeded
+           TKErrorCodeAuthenticationFailed
+           TKErrorCodeCommunicationError
+           TKErrorCodeCorruptedData
+           TKErrorCodeCanceledByUser */
     }
 }
 
@@ -220,6 +246,10 @@ err:
             if (!(USAGE_ANY_DECIPHER & prkey_info->usage))
                 return NO;
             break;
+        case TKTokenOperationPerformKeyExchange:
+            if (!(USAGE_ANY_AGREEMENT & prkey_info->usage))
+                return NO;
+            break;
         default:
             return NO;
     }
@@ -238,6 +268,45 @@ err:
     }
     if (!alg_info || ((alg_info->flags & minimum_flags) != minimum_flags))
         return NO;
+
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmECIESEncryptionStandardX963SHA1AESGCM]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECIESEncryptionStandardX963SHA224AESGCM]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECIESEncryptionStandardX963SHA256AESGCM]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECIESEncryptionStandardX963SHA384AESGCM]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECIESEncryptionStandardX963SHA512AESGCM]
+
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECIESEncryptionCofactorX963SHA1AESGCM]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECIESEncryptionCofactorX963SHA224AESGCM]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECIESEncryptionCofactorX963SHA256AESGCM]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECIESEncryptionCofactorX963SHA384AESGCM]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECIESEncryptionCofactorX963SHA512AESGCM]
+
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECIESEncryptionStandardVariableIVX963SHA224AESGCM]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECIESEncryptionStandardVariableIVX963SHA256AESGCM]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECIESEncryptionStandardVariableIVX963SHA384AESGCM]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECIESEncryptionStandardVariableIVX963SHA512AESGCM]
+
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECIESEncryptionCofactorVariableIVX963SHA224AESGCM]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECIESEncryptionCofactorVariableIVX963SHA256AESGCM]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECIESEncryptionCofactorVariableIVX963SHA384AESGCM]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECIESEncryptionCofactorVariableIVX963SHA512AESGCM]) {
+        return NO;
+    }
+
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeStandardX963SHA1]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeStandardX963SHA224]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeStandardX963SHA256]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeStandardX963SHA384]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeStandardX963SHA512]
+
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeCofactorX963SHA1]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeCofactorX963SHA224]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeCofactorX963SHA256]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeCofactorX963SHA384]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeCofactorX963SHA512]) {
+        return NO;
+    }
+
     /* TODO in addition with inspecting the card's flags we should check the
      * TokenInfo's and the private key's supported PKCS#11 mechanisms, see
      * pkcs15_prkey_can_do() in src/pkcs11/framework-pkcs15.c
@@ -349,7 +418,44 @@ err:
 }
 
 - (NSData *)tokenSession:(TKTokenSession *)session performKeyExchangeWithPublicKey:(NSData *)otherPartyPublicKeyData usingKey:(TKTokenObjectID)keyObjectID algorithm:(TKTokenKeyAlgorithm *)algorithm parameters:(TKTokenKeyExchangeParameters *)parameters error:(NSError * _Nullable __autoreleasing *)error {
-    return nil;
+    sc_log(self.OpenSCToken.ctx, "Performing %s with key %s", algorithm.description.UTF8String, sc_dump_hex([keyObjectID bytes], [keyObjectID length]));
+    sc_log_hex(self.OpenSCToken.ctx, "other party public key", [otherPartyPublicKeyData bytes], [otherPartyPublicKeyData length]);
+
+    struct sc_pkcs15_id p15id = dataToId(keyObjectID);
+    struct sc_pkcs15_object *prkey_obj = NULL;
+    
+    if (SC_SUCCESS != sc_pkcs15_find_prkey_by_id(self.OpenSCToken.p15card, &p15id, &prkey_obj)) {
+        if (error)
+            *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeObjectNotFound userInfo:nil];
+        return nil;
+    }
+    
+    if (sessionNeedsAuthentication(self, prkey_obj)) {
+        if (error)
+            *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeAuthenticationNeeded userInfo:nil];
+        return nil;
+    }
+
+    int flags = 0;
+    if (prkey_obj->type == SC_PKCS15_TYPE_PRKEY_EC) {
+        flags = SC_ALGORITHM_ECDH_CDH_RAW;
+    } else {
+        if (error)
+            *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeBadParameter userInfo:nil];
+        return nil;
+    }
+
+    unsigned char out_buf[256];
+    size_t out_len = sizeof(out_buf);
+    int r = sc_pkcs15_derive(self.OpenSCToken.p15card, prkey_obj, flags,
+            [otherPartyPublicKeyData bytes], [otherPartyPublicKeyData length],
+            out_buf, &out_len);
+    if (r < 0) {
+        statusToError(r, error);
+        return nil;
+    }
+
+    return [NSData dataWithBytes:out_buf length:out_len];
 }
 
 - (void)dealloc {
