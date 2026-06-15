@@ -48,6 +48,21 @@ static unsigned int algorithmToFlags(TKTokenKeyAlgorithm * algorithm)
     if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionRaw]
         || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureRaw])
         return SC_ALGORITHM_RSA_RAW;
+    
+    /* TODO untested
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15Raw])
+        return SC_ALGORITHM_RSA_PAD_PKCS1_TYPE_01 | SC_ALGORITHM_RSA_HASH_NONE;
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA1])
+        return SC_ALGORITHM_RSA_PAD_PKCS1_TYPE_01 | SC_ALGORITHM_RSA_HASH_SHA1;
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA224])
+        return SC_ALGORITHM_RSA_PAD_PKCS1_TYPE_01 | SC_ALGORITHM_RSA_HASH_SHA224;
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA256])
+        return SC_ALGORITHM_RSA_PAD_PKCS1_TYPE_01 | SC_ALGORITHM_RSA_HASH_SHA256;
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA384])
+        return SC_ALGORITHM_RSA_PAD_PKCS1_TYPE_01 | SC_ALGORITHM_RSA_HASH_SHA384;
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA512])
+        return SC_ALGORITHM_RSA_PAD_PKCS1_TYPE_01 | SC_ALGORITHM_RSA_HASH_SHA512;
+     */
 
     if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureRFC4754]
         || [algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962]
@@ -57,6 +72,17 @@ static unsigned int algorithmToFlags(TKTokenKeyAlgorithm * algorithm)
         || [algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA384]
         || [algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962SHA512])
         return SC_ALGORITHM_ECDSA_HASH_NONE;
+
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureMessageX962SHA1])
+        return SC_ALGORITHM_ECDSA_HASH_SHA1;
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureMessageX962SHA224])
+        return SC_ALGORITHM_ECDSA_HASH_SHA224;
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureMessageX962SHA256])
+        return SC_ALGORITHM_ECDSA_HASH_SHA256;
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureMessageX962SHA384])
+        return SC_ALGORITHM_ECDSA_HASH_SHA384;
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureMessageX962SHA512])
+        return SC_ALGORITHM_ECDSA_HASH_SHA512;
 
     if ([algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeStandard]
         || [algorithm isAlgorithm:kSecKeyAlgorithmECDHKeyExchangeStandardX963SHA1]
