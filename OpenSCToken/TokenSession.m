@@ -105,26 +105,125 @@ static unsigned int algorithmToFlags(TKTokenKeyAlgorithm * algorithm)
 
 static void statusToError(int sc_status, NSError **error)
 {
-    if (error != nil) {
-        switch (sc_status) {
-            case SC_ERROR_NOT_ALLOWED:
-                /* fall through */
-            case SC_ERROR_SECURITY_STATUS_NOT_SATISFIED:
-                *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeAuthenticationNeeded userInfo:nil];
-                break;
-            case SC_ERROR_PIN_CODE_INCORRECT:
-                *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeAuthenticationFailed userInfo:nil];
-                break;
-        }
-        /* TKErrorCodeBadParameter
-           TKErrorCodeNotImplemented
-           TKErrorCodeObjectNotFound
-           TKErrorCodeAuthenticationNeeded
-           TKErrorCodeAuthenticationFailed
-           TKErrorCodeCommunicationError
-           TKErrorCodeCorruptedData
-           TKErrorCodeCanceledByUser */
+    if (error == nil || sc_status >= 0) {
+        return;
     }
+
+    TKErrorCode errorCode;
+    switch (sc_status) {
+        case SC_ERROR_NOT_ALLOWED:
+        case SC_ERROR_SECURITY_STATUS_NOT_SATISFIED:
+        case SC_ERROR_PASSPHRASE_REQUIRED:
+            errorCode = TKErrorCodeAuthenticationNeeded;
+            break;
+
+        case SC_ERROR_PIN_CODE_INCORRECT:
+        case SC_ERROR_KEYPAD_PIN_MISMATCH:
+        case SC_ERROR_AUTH_METHOD_BLOCKED:
+        case SC_ERROR_SM_AUTHENTICATION_FAILED:
+            errorCode = TKErrorCodeAuthenticationFailed;
+            break;
+
+        case SC_ERROR_KEYPAD_CANCELLED:
+        case SC_ERROR_KEYPAD_TIMEOUT:
+            errorCode = TKErrorCodeCanceledByUser;
+            break;
+
+        case SC_ERROR_NO_READERS_FOUND:
+        case SC_ERROR_CARD_NOT_PRESENT:
+        case SC_ERROR_CARD_REMOVED:
+        case SC_ERROR_READER_DETACHED:
+        case SC_ERROR_WRONG_CARD:
+            errorCode = TKErrorCodeTokenNotFound;
+            break;
+
+        case SC_ERROR_FILE_NOT_FOUND:
+        case SC_ERROR_RECORD_NOT_FOUND:
+        case SC_ERROR_DATA_OBJECT_NOT_FOUND:
+        case SC_ERROR_OBJECT_NOT_FOUND:
+        case SC_ERROR_ASN1_OBJECT_NOT_FOUND:
+        case SC_ERROR_TEMPLATE_NOT_FOUND:
+        case SC_ERROR_PKCS15_APP_NOT_FOUND:
+        case SC_ERROR_SM_KEYSET_NOT_FOUND:
+            errorCode = TKErrorCodeObjectNotFound;
+            break;
+
+        case SC_ERROR_INCORRECT_PARAMETERS:
+        case SC_ERROR_WRONG_LENGTH:
+        case SC_ERROR_INVALID_ARGUMENTS:
+        case SC_ERROR_BUFFER_TOO_SMALL:
+        case SC_ERROR_INVALID_PIN_LENGTH:
+        case SC_ERROR_INVALID_DATA:
+        case SC_ERROR_INVALID_PIN_REFERENCE:
+        case SC_ERROR_OFFSET_TOO_LARGE:
+        case SC_ERROR_KEYPAD_MSG_TOO_LONG:
+            errorCode = TKErrorCodeBadParameter;
+            break;
+
+        case SC_ERROR_CORRUPTED_DATA:
+        case SC_ERROR_INVALID_ASN1_OBJECT:
+        case SC_ERROR_INVALID_TLV_OBJECT:
+        case SC_ERROR_WRONG_PADDING:
+        case SC_ERROR_DECRYPT_FAILED:
+        case SC_ERROR_SM_INVALID_CHECKSUM:
+            errorCode = TKErrorCodeCorruptedData;
+            break;
+
+        case SC_ERROR_CLASS_NOT_SUPPORTED:
+        case SC_ERROR_INS_NOT_SUPPORTED:
+        case SC_ERROR_NO_CARD_SUPPORT:
+        case SC_ERROR_NOT_SUPPORTED:
+        case SC_ERROR_NOT_IMPLEMENTED:
+            errorCode = TKErrorCodeNotImplemented;
+            break;
+
+        case SC_ERROR_READER:
+        case SC_ERROR_CARD_RESET:
+        case SC_ERROR_TRANSMIT_FAILED:
+        case SC_ERROR_EVENT_TIMEOUT:
+        case SC_ERROR_CARD_UNRESPONSIVE:
+        case SC_ERROR_READER_REATTACHED:
+        case SC_ERROR_READER_LOCKED:
+        case SC_ERROR_CARD_CMD_FAILED:
+        case SC_ERROR_MEMORY_FAILURE:
+        case SC_ERROR_INVALID_CARD:
+        case SC_ERROR_NOT_ENOUGH_MEMORY:
+        case SC_ERROR_FILE_ALREADY_EXISTS:
+        case SC_ERROR_FILE_END_REACHED:
+        case SC_ERROR_REF_DATA_NOT_USABLE:
+        case SC_ERROR_INTERNAL:
+        case SC_ERROR_ASN1_END_OF_CONTENTS:
+        case SC_ERROR_OUT_OF_MEMORY:
+        case SC_ERROR_TOO_MANY_OBJECTS:
+        case SC_ERROR_OBJECT_NOT_VALID:
+        case SC_ERROR_INCONSISTENT_CONFIGURATION:
+        case SC_ERROR_CANNOT_LOAD_MODULE:
+        case SC_ERROR_TLV_END_OF_CONTENTS:
+        case SC_ERROR_PKCS15INIT:
+        case SC_ERROR_SYNTAX_ERROR:
+        case SC_ERROR_INCONSISTENT_PROFILE:
+        case SC_ERROR_INCOMPATIBLE_KEY:
+        case SC_ERROR_NO_DEFAULT_KEY:
+        case SC_ERROR_NON_UNIQUE_ID:
+        case SC_ERROR_CANNOT_LOAD_KEY:
+        case SC_ERROR_FILE_TOO_SMALL:
+        case SC_ERROR_SM:
+        case SC_ERROR_SM_ENCRYPT_FAILED:
+        case SC_ERROR_SM_INVALID_LEVEL:
+        case SC_ERROR_SM_NO_SESSION_KEYS:
+        case SC_ERROR_SM_INVALID_SESSION_KEY:
+        case SC_ERROR_SM_NOT_INITIALIZED:
+        case SC_ERROR_SM_RAND_FAILED:
+        case SC_ERROR_SM_IFD_DATA_MISSING:
+        case SC_ERROR_SM_NOT_APPLIED:
+        case SC_ERROR_SM_SESSION_ALREADY_ACTIVE:
+        case SC_ERROR_UNKNOWN:
+        default:
+            errorCode = TKErrorCodeCommunicationError;
+            break;
+    }
+
+    *error = [NSError errorWithDomain:TKErrorDomain code:errorCode userInfo:nil];
 }
 
 static BOOL sessionNeedsAuthentication(OpenSCTokenSession *session, struct sc_pkcs15_object *obj)
