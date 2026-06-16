@@ -21,12 +21,12 @@ if [ -z "$OPENSSL_CFLAGS" -a -z "$OPENSSL_LIBS" ] ; then
 		fi
 		cd openssl
 		sed -ie 's!my @disablables = (!my @disablables = (\n    "apps",!' Configure
-		./Configure darwin64-x86_64 no-shared no-apps --prefix=$PREFIX enable-ec_nistp_64_gcc_128
+		./Configure darwin64-x86_64 no-shared no-apps no-dso no-engine --prefix=$PREFIX enable-ec_nistp_64_gcc_128
 		make clean
 		make -j 4
 		make DESTDIR=$BUILDPATH/openssl_bin install_sw
 		make clean
-		./Configure darwin64-arm64 no-shared no-apps --prefix=$PREFIX enable-ec_nistp_64_gcc_128
+		./Configure darwin64-arm64 no-shared no-apps no-dso no-engine --prefix=$PREFIX enable-ec_nistp_64_gcc_128
 		make -j 4
 		make DESTDIR=$BUILDPATH/openssl_arm64 install_sw
 		lipo -create $BUILDPATH/openssl_arm64/$PREFIX/lib/libcrypto.a $BUILDPATH/openssl_bin/$PREFIX/lib/libcrypto.a -output libcrypto.a
