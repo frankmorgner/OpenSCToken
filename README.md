@@ -53,6 +53,11 @@ sudo defaults delete /Library/Preferences/com.apple.security.smartcard DisabledT
 ```
 pluginkit -r -i org.opensc-project.mac.opensctoken.OpenSCTokenApp.OpenSCToken
 ```
+- Turn on debug logging
+```
+sudo defaults write /Library/Preferences/com.apple.security.smartcard Logging -bool yes
+log stream --predicate '(subsystem == "com.apple.CryptoTokenKit") && (category == "APDULog")'
+```
 
 ## Comparison with [OpenSC.tokend](https://github.com/OpenSC/OpenSC.tokend)
 
@@ -120,20 +125,38 @@ Tested applications:
 - [x] Unlock *login keychain*
 - [x] Safari, Chrome, Firefox (TLS client authentication)
 - [x] Unlock *sudo*
+- [x] `ctk-tool` (OpenSC)
 
 Tested Mechanisms:
 
 - [x] `kSecKeyAlgorithmRSASignatureRaw`
 - [ ] `kSecKeyAlgorithmRSAEncryptionRaw`
-- [ ] `kSecKeyAlgorithmECDSASignatureRFC4754`
-- [ ] `kSecKeyAlgorithmECDSASignatureDigestX962`
+- [x] `kSecKeyAlgorithmECDSASignatureRFC4754`
+- [x] `kSecKeyAlgorithmECDSASignatureDigestX962`
 - [x] `kSecKeyAlgorithmECDSASignatureDigestX962SHA1`
 - [x] `kSecKeyAlgorithmECDSASignatureDigestX962SHA224`
 - [x] `kSecKeyAlgorithmECDSASignatureDigestX962SHA256`
 - [x] `kSecKeyAlgorithmECDSASignatureDigestX962SHA384`
 - [x] `kSecKeyAlgorithmECDSASignatureDigestX962SHA512`
+- [x] `kSecKeyAlgorithmECDSASignatureMessageX962SHA1`
+- [x] `kSecKeyAlgorithmECDSASignatureMessageX962SHA224`
+- [x] `kSecKeyAlgorithmECDSASignatureMessageX962SHA256`
+- [x] `kSecKeyAlgorithmECDSASignatureMessageX962SHA384`
+- [x] `kSecKeyAlgorithmECDSASignatureMessageX962SHA512`
+- [x] `kSecKeyAlgorithmECDHKeyExchangeStandard`
+- [x] `kSecKeyAlgorithmECDHKeyExchangeStandardX963SHA1`
+- [x] `kSecKeyAlgorithmECDHKeyExchangeStandardX963SHA224`
+- [x] `kSecKeyAlgorithmECDHKeyExchangeStandardX963SHA256`
+- [x] `kSecKeyAlgorithmECDHKeyExchangeStandardX963SHA384`
+- [x] `kSecKeyAlgorithmECDHKeyExchangeStandardX963SHA512`
+- [x] `kSecKeyAlgorithmECDHKeyExchangeCofactor`
+- [x] `kSecKeyAlgorithmECDHKeyExchangeCofactorX963SHA1`
+- [x] `kSecKeyAlgorithmECDHKeyExchangeCofactorX963SHA224`
+- [x] `kSecKeyAlgorithmECDHKeyExchangeCofactorX963SHA256`
+- [x] `kSecKeyAlgorithmECDHKeyExchangeCofactorX963SHA384`
+- [x] `kSecKeyAlgorithmECDHKeyExchangeCofactorX963SHA512`
 
-The unchecked mechanisms are implemented, but currently untested.
+All other mechanisms are implemented in software on top of the raw cryptographic operation.
 
 ---
 
