@@ -17,7 +17,7 @@ if [ -z "$OPENSSL_CFLAGS" -a -z "$OPENSSL_LIBS" ] ; then
 	if ! test -e $BUILDPATH/openssl/$PREFIX/lib/pkgconfig; then
 		# Build OpenSSL manually, because Apple's binaries are deprecated
 		if ! test -e openssl; then
-			git clone --depth=1 https://github.com/openssl/openssl.git -b openssl-3.0
+			git clone --depth=1 https://github.com/openssl/openssl.git -b openssl-3.5
 		fi
 		cd openssl
 		sed -ie 's!my @disablables = (!my @disablables = (\n    "apps",!' Configure
