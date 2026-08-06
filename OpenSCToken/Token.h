@@ -21,10 +21,35 @@
 @import CryptoTokenKit.TKSmartCardToken;
 
 #include "libopensc/pkcs15.h"
+#include "libopensc/cards.h"
+#include "libopensc/cardctl.h"
 
 #define TYPE_CERT 0x01
 #define TYPE_PRIV 0x02
 #define TYPE_AUTH 0x03
+
+/*
+ * OpenSC exposes the YubiKey PIV PIN policy through card_ctl.  Checking the
+ * policy on the card avoids both an unnecessary CryptoTokenKit PIN prompt for
+ * PIN-NEVER keys and unsafe assumptions based only on the PIV slot number.
+ */
+static BOOL isPINNeverYubiKeyKey(struct sc_pkcs15_card * _Nullable p15card,
+                                struct sc_pkcs15_object * _Nullable obj)
+{
+    if (p15card == NULL || p15card->card == NULL || obj == NULL || obj->data == NULL)
+        return NO;
+
+    if (p15card->card->type != SC_CARD_TYPE_PIV_II_YUBIKEY4)
+        return NO;
+
+    if ((obj->type & SC_PKCS15_TYPE_CLASS_MASK) != SC_PKCS15_TYPE_PRKEY)
+        return NO;
+
+    struct sc_pkcs15_prkey_info *keyInfo = obj->data;
+    u8 pinPolicy = keyInfo->key_reference;
+    int r = sc_card_ctl(p15card->card, SC_CARDCTL_PIV_YK_PIN_POLICY, &pinPolicy);
+    return r == SC_SUCCESS && pinPolicy == 0x01;
+}
 
 static NSData* _Nullable idToData(u8 type, struct sc_pkcs15_id * _Nullable p15id)
 {
