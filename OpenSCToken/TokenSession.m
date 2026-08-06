@@ -48,6 +48,21 @@ static unsigned int algorithmToFlags(TKTokenKeyAlgorithm * algorithm)
     if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionRaw]
         || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureRaw])
         return SC_ALGORITHM_RSA_RAW;
+
+    /* PIV cards commonly expose raw RSA.  OpenSC can apply or remove these
+     * paddings in software while using the card's raw RSA primitive. */
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionPKCS1])
+        return SC_ALGORITHM_RSA_PAD_PKCS1_TYPE_02;
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionOAEPSHA1])
+        return SC_ALGORITHM_RSA_PAD_OAEP | SC_ALGORITHM_RSA_HASH_SHA1 | SC_ALGORITHM_MGF1_SHA1;
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionOAEPSHA224])
+        return SC_ALGORITHM_RSA_PAD_OAEP | SC_ALGORITHM_RSA_HASH_SHA224 | SC_ALGORITHM_MGF1_SHA224;
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionOAEPSHA256])
+        return SC_ALGORITHM_RSA_PAD_OAEP | SC_ALGORITHM_RSA_HASH_SHA256 | SC_ALGORITHM_MGF1_SHA256;
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionOAEPSHA384])
+        return SC_ALGORITHM_RSA_PAD_OAEP | SC_ALGORITHM_RSA_HASH_SHA384 | SC_ALGORITHM_MGF1_SHA384;
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionOAEPSHA512])
+        return SC_ALGORITHM_RSA_PAD_OAEP | SC_ALGORITHM_RSA_HASH_SHA512 | SC_ALGORITHM_MGF1_SHA512;
     
     /* TODO untested
     if ([algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15Raw])
@@ -228,6 +243,9 @@ static void statusToError(int sc_status, NSError **error)
 
 static BOOL sessionNeedsAuthentication(OpenSCTokenSession *session, struct sc_pkcs15_object *obj)
 {
+    if (session && isPINNeverYubiKeyKey(session.OpenSCToken.p15card, obj))
+        return NO;
+
     if (session && session.smartCard.sensitive == NO && obj && 0 < obj->auth_id.len) {
         /* Some cards do not support a logout and CTK doesn't support a card reset. Since we want to enforce a PIN verification even though the key is technically unlocked, we do NOT use sc_pkcs15_get_pin_info() here. */
         if (obj->user_consent)
@@ -404,10 +422,21 @@ err:
     }
 
     unsigned int minimum_flags = algorithmToFlags(algorithm);
+    if (minimum_flags == (unsigned int) -1)
+        return NO;
+
     switch (prkey_obj->type) {
         case SC_PKCS15_TYPE_PRKEY_RSA:
-            if ((rsa_flags & minimum_flags) != minimum_flags)
+            if (operation == TKTokenOperationDecryptData &&
+                (minimum_flags & (SC_ALGORITHM_RSA_PAD_PKCS1_TYPE_02 | SC_ALGORITHM_RSA_PAD_OAEP))) {
+                /* Padded decryption is available in software when the card
+                 * provides raw RSA. */
+                if (!(rsa_flags & SC_ALGORITHM_RSA_RAW) &&
+                    (rsa_flags & minimum_flags) != minimum_flags)
+                    return NO;
+            } else if ((rsa_flags & minimum_flags) != minimum_flags) {
                 return NO;
+            }
             break;
         case SC_PKCS15_TYPE_PRKEY_EC:
             if ((ec_flags & minimum_flags) != minimum_flags)

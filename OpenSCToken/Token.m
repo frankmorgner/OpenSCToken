@@ -157,7 +157,7 @@
 
         NSMutableDictionary<NSNumber *, TKTokenOperationConstraint> *constraints = [NSMutableDictionary dictionary];
         TKTokenOperationConstraint constraint;
-        if (prkey_obj->auth_id.len == 0) {
+        if (isPINNeverYubiKeyKey(p15card, prkey_obj) || prkey_obj->auth_id.len == 0) {
             /* true, indicating that the operation is always allowed, without any authentication necessary. */
             constraint = @YES;
         } else {
@@ -171,7 +171,6 @@
         } else {
             keyItem.canSign = NO;
         }
-        keyItem.suitableForLogin = keyItem.canSign;
         
         if (USAGE_ANY_DECIPHER & prkey_info->usage) {
             keyItem.canDecrypt = YES;
@@ -186,6 +185,10 @@
         } else {
             keyItem.canPerformKeyExchange = NO;
         }
+
+        /* Login uses signing keys for authentication and RSA decryption or
+         * ECDH keys to wrap the Login keychain unlock secret. */
+        keyItem.suitableForLogin = keyItem.canSign || keyItem.canDecrypt || keyItem.canPerformKeyExchange;
 
         keyItem.constraints = constraints;
         [items addObject:keyItem];
