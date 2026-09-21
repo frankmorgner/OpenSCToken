@@ -289,8 +289,27 @@ err:
     if (self = [super init]) {
         _session = session;
         _authID = authID;
+
+        /* CTK's default PIN format is numeric with 4 to 8 characters, so the system dialog refuses
+         * longer PINs. Use the length and charset declared by the PKCS#15 PIN object instead. */
+        struct sc_pkcs15_object *pin_obj = NULL;
+        struct sc_pkcs15_id p15id = dataToId(authID);
+        if (sc_pkcs15_find_pin_by_auth_id(session.OpenSCToken.p15card, &p15id, &pin_obj) == SC_SUCCESS
+            && pin_obj && pin_obj->data) {
+            struct sc_pkcs15_auth_info *auth_info = (struct sc_pkcs15_auth_info *) pin_obj->data;
+            if (auth_info->auth_type == SC_PKCS15_PIN_AUTH_TYPE_PIN) {
+                TKSmartCardPINFormat *format = [[TKSmartCardPINFormat alloc] init];
+                format.charset = (auth_info->attrs.pin.type == SC_PKCS15_PIN_TYPE_UTF8)
+                    ? TKSmartCardPINCharsetAlphanumeric : TKSmartCardPINCharsetNumeric;
+                if (auth_info->attrs.pin.min_length > 0)
+                    format.minPINLength = (NSInteger) auth_info->attrs.pin.min_length;
+                if (auth_info->attrs.pin.max_length > 0)
+                    format.maxPINLength = (NSInteger) auth_info->attrs.pin.max_length;
+                self.PINFormat = format;
+            }
+        }
     }
-    
+
     return self;
 }
 
