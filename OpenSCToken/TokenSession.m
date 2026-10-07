@@ -402,8 +402,7 @@ err:
         alg_info++;
     }
 
-    /* Like sc_get_encoding_flags(), let OpenSC prepend the DigestInfo for
-     * cards that only do PKCS#1 v1.5 on raw hashes (e.g. Spanish DNIe) */
+    /* OpenSC can prepend DigestInfo for cards that only do PKCS#1 v1.5 on raw hashes */
     if ((rsa_flags & SC_ALGORITHM_RSA_PAD_PKCS1_TYPE_01)
         && (rsa_flags & SC_ALGORITHM_RSA_HASH_NONE))
         rsa_flags |= SC_ALGORITHM_RSA_HASHES;
