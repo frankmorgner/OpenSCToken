@@ -49,7 +49,7 @@ static unsigned int algorithmToFlags(TKTokenKeyAlgorithm * algorithm)
         || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureRaw])
         return SC_ALGORITHM_RSA_RAW;
     
-    /* TODO untested
+    /* Needed by cards without raw RSA, e.g. Spanish DNIe */
     if ([algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15Raw])
         return SC_ALGORITHM_RSA_PAD_PKCS1_TYPE_01 | SC_ALGORITHM_RSA_HASH_NONE;
     if ([algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA1])
@@ -62,7 +62,6 @@ static unsigned int algorithmToFlags(TKTokenKeyAlgorithm * algorithm)
         return SC_ALGORITHM_RSA_PAD_PKCS1_TYPE_01 | SC_ALGORITHM_RSA_HASH_SHA384;
     if ([algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA512])
         return SC_ALGORITHM_RSA_PAD_PKCS1_TYPE_01 | SC_ALGORITHM_RSA_HASH_SHA512;
-     */
 
     if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureRFC4754]
         || [algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962]
@@ -422,10 +421,18 @@ err:
         alg_info++;
     }
 
+    /* OpenSC can prepend DigestInfo for cards that only do PKCS#1 v1.5 on raw hashes */
+    if ((rsa_flags & SC_ALGORITHM_RSA_PAD_PKCS1_TYPE_01)
+        && (rsa_flags & SC_ALGORITHM_RSA_HASH_NONE))
+        rsa_flags |= SC_ALGORITHM_RSA_HASHES;
+
     unsigned int minimum_flags = algorithmToFlags(algorithm);
     switch (prkey_obj->type) {
         case SC_PKCS15_TYPE_PRKEY_RSA:
-            if ((rsa_flags & minimum_flags) != minimum_flags)
+            /* SC_ALGORITHM_ECDSA_HASH_* alias SC_ALGORITHM_RSA_HASH_*, so
+             * reject EC algorithms, which have no RSA padding bit set */
+            if (!(minimum_flags & SC_ALGORITHM_RSA_PADS)
+                || (rsa_flags & minimum_flags) != minimum_flags)
                 return NO;
             break;
         case SC_PKCS15_TYPE_PRKEY_EC:
