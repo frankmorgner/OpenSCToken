@@ -102,6 +102,29 @@ static unsigned int algorithmToFlags(TKTokenKeyAlgorithm * algorithm)
     return (unsigned int) -1;
 }
 
+static BOOL isRSA(TKTokenKeyAlgorithm * algorithm)
+{
+    return [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureRaw]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15Raw]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA1]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA224]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA256]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA384]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA512]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureMessagePKCS1v15SHA1]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureMessagePKCS1v15SHA224]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureMessagePKCS1v15SHA256]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureMessagePKCS1v15SHA384]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureMessagePKCS1v15SHA512]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionRaw]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionPKCS1]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionOAEPSHA1]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionOAEPSHA224]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionOAEPSHA256]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionOAEPSHA384]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionOAEPSHA512];
+}
+
 static void statusToError(int sc_status, NSError **error)
 {
     if (error == nil || sc_status >= 0) {
@@ -410,14 +433,13 @@ err:
     unsigned int minimum_flags = algorithmToFlags(algorithm);
     switch (prkey_obj->type) {
         case SC_PKCS15_TYPE_PRKEY_RSA:
-            /* SC_ALGORITHM_ECDSA_HASH_* alias SC_ALGORITHM_RSA_HASH_*, so
-             * reject EC algorithms, which have no RSA padding bit set */
-            if (!(minimum_flags & SC_ALGORITHM_RSA_PADS)
+            if (!isRSA(algorithm)
                 || (rsa_flags & minimum_flags) != minimum_flags)
                 return NO;
             break;
         case SC_PKCS15_TYPE_PRKEY_EC:
-            if ((ec_flags & minimum_flags) != minimum_flags)
+            if (isRSA(algorithm)
+                || (ec_flags & minimum_flags) != minimum_flags)
                 return NO;
             break;
         default:
