@@ -19,6 +19,11 @@ OpenSCToken aims at providing the existing functionality of OpenSC through Crypt
 
 Now your're ready to use the smart card even if the application is not running (as long as your card is supported by OpenSC).
 
+For an end-to-end example covering YubiKey PIV provisioning, slot 9A login,
+slot 9D Login keychain wrapping, driver registration, pairing, cache refresh,
+testing, and rollback, see [YubiKey PIV login and Login keychain unlock on
+macOS](docs/YUBIKEY_PIV_MACOS_LOGIN.md).
+
 ### Useful Commands
 
 - Show location of the registered OpenSCToken
