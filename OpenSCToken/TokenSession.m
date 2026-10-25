@@ -48,7 +48,19 @@ static unsigned int algorithmToFlags(TKTokenKeyAlgorithm * algorithm)
     if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionRaw]
         || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureRaw])
         return SC_ALGORITHM_RSA_RAW;
-    
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionPKCS1])
+        return SC_ALGORITHM_RSA_PAD_PKCS1_TYPE_02;
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionOAEPSHA1])
+        return SC_ALGORITHM_RSA_PAD_OAEP | SC_ALGORITHM_RSA_HASH_SHA1 | SC_ALGORITHM_MGF1_SHA1;
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionOAEPSHA224])
+        return SC_ALGORITHM_RSA_PAD_OAEP | SC_ALGORITHM_RSA_HASH_SHA224 | SC_ALGORITHM_MGF1_SHA224;
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionOAEPSHA256])
+        return SC_ALGORITHM_RSA_PAD_OAEP | SC_ALGORITHM_RSA_HASH_SHA256 | SC_ALGORITHM_MGF1_SHA256;
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionOAEPSHA384])
+        return SC_ALGORITHM_RSA_PAD_OAEP | SC_ALGORITHM_RSA_HASH_SHA384 | SC_ALGORITHM_MGF1_SHA384;
+    if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionOAEPSHA512])
+        return SC_ALGORITHM_RSA_PAD_OAEP | SC_ALGORITHM_RSA_HASH_SHA512 | SC_ALGORITHM_MGF1_SHA512;
+
     /* Needed by cards without raw RSA, e.g. Spanish DNIe */
     if ([algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15Raw])
         return SC_ALGORITHM_RSA_PAD_PKCS1_TYPE_01 | SC_ALGORITHM_RSA_HASH_NONE;
@@ -297,6 +309,7 @@ static BOOL OpenSCAuthOperationFinishWithError(OpenSCTokenSession *session, NSDa
 err:
     if (SC_SUCCESS != r) {
         os_log_error(OS_LOG_DEFAULT, "Could not verify PIN %s", sc_strerror(r));
+        statusToError(r, error);
         return NO;
     }
     // Mark card session sensitive, because we entered PIN into it and no session should access it in this state.
@@ -450,15 +463,29 @@ err:
         rsa_flags |= SC_ALGORITHM_RSA_HASHES;
 
     unsigned int minimum_flags = algorithmToFlags(algorithm);
+    if (minimum_flags == (unsigned int) -1)
+        return NO;
+
     switch (prkey_obj->type) {
         case SC_PKCS15_TYPE_PRKEY_RSA:
-            if (!isRSA(algorithm)
-                || (rsa_flags & minimum_flags) != minimum_flags)
+            if (!isRSA(algorithm))
                 return NO;
+            if ((rsa_flags & minimum_flags) != minimum_flags) {
+                /* Padded decryption can be done in software when the card
+                 * exposes raw RSA and supports the raw decipher operation. */
+                if (!(operation == TKTokenOperationDecryptData
+                      && (minimum_flags & (SC_ALGORITHM_RSA_PAD_PKCS1_TYPE_02 | SC_ALGORITHM_RSA_PAD_OAEP))
+                      && (rsa_flags & SC_ALGORITHM_RSA_RAW)
+                      && OpenSCTokenCardSupportsPaddedRSADecrypt(self.OpenSCToken.card))) {
+                    sc_log(self.OpenSCToken.ctx, "Padded RSA decryption is not supported by this card");
+                    return NO;
+                }
+            }
             break;
         case SC_PKCS15_TYPE_PRKEY_EC:
-            if (isRSA(algorithm)
-                || (ec_flags & minimum_flags) != minimum_flags)
+            if (isRSA(algorithm))
+                return NO;
+            if ((ec_flags & minimum_flags) != minimum_flags)
                 return NO;
             break;
         default:
@@ -528,6 +555,13 @@ err:
         return nil;
     }
 
+    unsigned int flags = algorithmToFlags(algorithm);
+    if (flags == (unsigned int) -1) {
+        if (error)
+            *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeBadParameter userInfo:nil];
+        return nil;
+    }
+
     /* Compute output size */
     NSMutableData *out;
     struct sc_pkcs15_prkey_info *prkey_info = (struct sc_pkcs15_prkey_info *) prkey_obj->data;
@@ -556,7 +590,7 @@ err:
         default:
             return nil;
     }
-    int r = sc_pkcs15_compute_signature(self.OpenSCToken.p15card, prkey_obj, algorithmToFlags(algorithm), [dataToSign bytes], [dataToSign length], (unsigned char *) [out bytes], [out length], NULL);
+    int r = sc_pkcs15_compute_signature(self.OpenSCToken.p15card, prkey_obj, flags, [dataToSign bytes], [dataToSign length], (unsigned char *) [out bytes], [out length], NULL);
 
     if (0 > r) {
         statusToError(r, error);
@@ -596,14 +630,29 @@ err:
     struct sc_pkcs15_object *prkey_obj = NULL;
     if (SC_SUCCESS != sc_pkcs15_find_prkey_by_id(self.OpenSCToken.p15card, &p15id, &prkey_obj))
         return nil;
+
+    if (prkey_obj->type == SC_PKCS15_TYPE_PRKEY_RSA
+        && !OpenSCTokenCardSupportsPaddedRSADecrypt(self.OpenSCToken.card)) {
+        sc_log(self.OpenSCToken.ctx, "RSA decryption is not supported by this card");
+        if (error)
+            *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeBadParameter userInfo:nil];
+        return nil;
+    }
     
     if (sessionNeedsAuthentication(self, prkey_obj)) {
         *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeAuthenticationNeeded userInfo:nil];
         return nil;
     }
 
+    unsigned int flags = algorithmToFlags(algorithm);
+    if (flags == (unsigned int) -1) {
+        if (error)
+            *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeBadParameter userInfo:nil];
+        return nil;
+    }
+
 	unsigned char decrypted[512]; /* FIXME: Will not work for keys above 4096 bits */
-	int r = sc_pkcs15_decipher(self.OpenSCToken.p15card, prkey_obj, algorithmToFlags(algorithm),
+	int r = sc_pkcs15_decipher(self.OpenSCToken.p15card, prkey_obj, flags,
 			[ciphertext bytes], [ciphertext length], decrypted, sizeof(decrypted), NULL);
     if (0 > r) {
         statusToError(r, error);
