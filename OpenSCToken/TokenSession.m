@@ -49,7 +49,7 @@ static unsigned int algorithmToFlags(TKTokenKeyAlgorithm * algorithm)
         || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureRaw])
         return SC_ALGORITHM_RSA_RAW;
     
-    /* TODO untested
+    /* Needed by cards without raw RSA, e.g. Spanish DNIe */
     if ([algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15Raw])
         return SC_ALGORITHM_RSA_PAD_PKCS1_TYPE_01 | SC_ALGORITHM_RSA_HASH_NONE;
     if ([algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA1])
@@ -62,7 +62,6 @@ static unsigned int algorithmToFlags(TKTokenKeyAlgorithm * algorithm)
         return SC_ALGORITHM_RSA_PAD_PKCS1_TYPE_01 | SC_ALGORITHM_RSA_HASH_SHA384;
     if ([algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA512])
         return SC_ALGORITHM_RSA_PAD_PKCS1_TYPE_01 | SC_ALGORITHM_RSA_HASH_SHA512;
-     */
 
     if ([algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureRFC4754]
         || [algorithm isAlgorithm:kSecKeyAlgorithmECDSASignatureDigestX962]
@@ -101,6 +100,29 @@ static unsigned int algorithmToFlags(TKTokenKeyAlgorithm * algorithm)
         return SC_ALGORITHM_ECDH_CDH_RAW;
 
     return (unsigned int) -1;
+}
+
+static BOOL isRSA(TKTokenKeyAlgorithm * algorithm)
+{
+    return [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureRaw]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15Raw]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA1]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA224]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA256]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA384]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA512]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureMessagePKCS1v15SHA1]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureMessagePKCS1v15SHA224]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureMessagePKCS1v15SHA256]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureMessagePKCS1v15SHA384]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureMessagePKCS1v15SHA512]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionRaw]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionPKCS1]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionOAEPSHA1]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionOAEPSHA224]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionOAEPSHA256]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionOAEPSHA384]
+        || [algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionOAEPSHA512];
 }
 
 static void statusToError(int sc_status, NSError **error)
@@ -422,14 +444,21 @@ err:
         alg_info++;
     }
 
+    /* OpenSC can prepend DigestInfo for cards that only do PKCS#1 v1.5 on raw hashes */
+    if ((rsa_flags & SC_ALGORITHM_RSA_PAD_PKCS1_TYPE_01)
+        && (rsa_flags & SC_ALGORITHM_RSA_HASH_NONE))
+        rsa_flags |= SC_ALGORITHM_RSA_HASHES;
+
     unsigned int minimum_flags = algorithmToFlags(algorithm);
     switch (prkey_obj->type) {
         case SC_PKCS15_TYPE_PRKEY_RSA:
-            if ((rsa_flags & minimum_flags) != minimum_flags)
+            if (!isRSA(algorithm)
+                || (rsa_flags & minimum_flags) != minimum_flags)
                 return NO;
             break;
         case SC_PKCS15_TYPE_PRKEY_EC:
-            if ((ec_flags & minimum_flags) != minimum_flags)
+            if (isRSA(algorithm)
+                || (ec_flags & minimum_flags) != minimum_flags)
                 return NO;
             break;
         default:

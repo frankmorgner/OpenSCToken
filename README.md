@@ -130,6 +130,12 @@ Tested applications:
 Tested Mechanisms:
 
 - [x] `kSecKeyAlgorithmRSASignatureRaw`
+- [x] `kSecKeyAlgorithmRSASignatureDigestPKCS1v15Raw`
+- [x] `kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA1`
+- [x] `kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA224`
+- [x] `kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA256`
+- [x] `kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA384`
+- [x] `kSecKeyAlgorithmRSASignatureDigestPKCS1v15SHA512`
 - [ ] `kSecKeyAlgorithmRSAEncryptionRaw`
 - [x] `kSecKeyAlgorithmECDSASignatureRFC4754`
 - [x] `kSecKeyAlgorithmECDSASignatureDigestX962`
