@@ -49,8 +49,8 @@
 #define USAGE_ANY_AGREEMENT (SC_PKCS15_PRKEY_USAGE_DERIVE)
 
 - (nullable instancetype)initWithSmartCard:(TKSmartCard *)smartCard AID:(nullable NSData *)AID OpenSCDriver:(OpenSCTokenDriver *)tokenDriver error:(NSError * _Nullable __autoreleasing *)error {
-    
-    sc_context_param_t ctx_param;
+
+    sc_context_param_t ctx_param = {0};
     sc_context_t *ctx = NULL;
     sc_card_t *card = NULL;
     sc_pkcs15_card_t *p15card = NULL;
@@ -61,26 +61,26 @@
     size_t i, cert_num;
     NSMutableArray<TKTokenKeychainItem *> *items;
     NSString *instanceID = nil;
-    
-    /* TODO: Move card and p15card to smartCard.context. smartCard.context would automatically be set to nil if the card gets reset or the state gets modified by a different session, see documentation for TKSmartCard */
-    
-    self.card = NULL;
-    self.p15card = NULL;
-    self.ctx = NULL;
+
+    /* TODO: Move card and p15card to smartCard.context. smartCard.context would
+     * automatically be set to nil if the card gets reset or the state gets
+     * modified by a different session, see documentation for TKSmartCard */
 
     os_log(OS_LOG_DEFAULT, "%s", OPENSC_SCM_REVISION);
 
     /* Respect the App's sandbox; use only bundled resources */
     NSString *Resources = [[NSBundle mainBundle] resourcePath];
-    NSString * opensc_conf = [[NSBundle mainBundle] pathForResource:@"opensc" ofType:@"conf"];
-    NSArray* Documents = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    os_log(OS_LOG_DEFAULT, "For logging and persistent data cache please use %@", Documents.lastObject);
+    NSString *opensc_conf = [[NSBundle mainBundle] pathForResource:@"opensc"
+                                                            ofType:@"conf"];
+    NSArray *Documents = NSSearchPathForDirectoriesInDomains(
+            NSDocumentDirectory, NSUserDomainMask, YES);
+    os_log(OS_LOG_DEFAULT, "For logging and persistent data cache please use %@",
+            Documents.lastObject);
     if (opensc_conf != nil) {
         os_log(OS_LOG_DEFAULT, "Reading configuration %@", opensc_conf);
         setenv("OPENSC_CONF", opensc_conf.fileSystemRepresentation, 0);
     }
 
-    memset(&ctx_param, 0, sizeof(ctx_param));
     ctx_param.ver = 1;
     ctx_param.app_name = "cryptotokenkit";
 
@@ -92,22 +92,29 @@
 
     r = sc_ctx_use_reader(ctx, (__bridge void *)(smartCard.slot), (__bridge void *)(smartCard));
     LOG_TEST_GOTO_ERR(ctx, r, "sc_ctx_use_reader");
-    
+
     /* sc_ctx_use_reader() adds our handles to the end of the list of all readers */
     r = sc_connect_card(sc_ctx_get_reader(ctx, sc_ctx_get_reader_count(ctx)-1), &card);
     LOG_TEST_GOTO_ERR(ctx, r, "sc_connect_card");
-    
+
     /* Initialize OpenPACE to access Resources within the App's sandbox. This initialization must happen after EAC_init() */
     if (Resources != nil) {
         EAC_set_cvc_default_dir(Resources.fileSystemRepresentation);
         EAC_set_x509_default_dir(Resources.fileSystemRepresentation);
     }
-    
+
     app_generic = sc_pkcs15_get_application_by_type(card, "generic");
     aid = app_generic ? &app_generic->aid : NULL;
     r = sc_pkcs15_bind(card, aid, &p15card);
     LOG_TEST_GOTO_ERR(ctx, r, "sc_pkcs15_bind");
-    
+
+    /* some tokens do not report a serial number */
+    if (p15card->tokeninfo && p15card->tokeninfo->serial_number &&
+            p15card->tokeninfo->serial_number[0] != '\0') {
+        instanceID =
+            [NSString stringWithUTF8String:p15card->tokeninfo->serial_number];
+    }
+
     r = sc_pkcs15_get_objects(p15card, SC_PKCS15_TYPE_CERT_X509, objs, sizeof(objs)/(sizeof *objs));
     LOG_TEST_GOTO_ERR(ctx, r, "sc_pkcs15_get_objects (SC_PKCS15_TYPE_CERT_X509)");
     cert_num = (size_t) r;
@@ -172,14 +179,14 @@
             keyItem.canSign = NO;
         }
         keyItem.suitableForLogin = keyItem.canSign;
-        
+
         if (USAGE_ANY_DECIPHER & prkey_info->usage) {
             keyItem.canDecrypt = YES;
             constraints[@(TKTokenOperationDecryptData)] = constraint;
         } else {
             keyItem.canDecrypt = NO;
         }
-        
+
         if (USAGE_ANY_AGREEMENT & prkey_info->usage) {
             keyItem.canPerformKeyExchange = YES;
             constraints[@(TKTokenOperationPerformKeyExchange)] = constraint;
@@ -189,31 +196,45 @@
 
         keyItem.constraints = constraints;
         [items addObject:keyItem];
+
+        if (instanceID == nil) {
+            // if the token doesn't have a serial number, then use its private
+            // key's ID as the instance ID.
+            unsigned char szGuid[SC_MD_MAX_CONTAINER_NAME_LEN + 1] = {0};
+            size_t guid_len = sizeof(szGuid);
+            r = sc_pkcs15_get_object_guid(p15card, prkey_obj, 1, szGuid,
+                    &guid_len);
+            if (r == SC_SUCCESS) {
+                instanceID = [[NSString alloc] initWithBytes:szGuid
+                                                      length:guid_len
+                                                    encoding:NSUTF8StringEncoding];
+            }
+        }
+    }
+    if (instanceID == nil) {
+        // CryptoTokenKit requires a unique, persistent, non-empty instanceID to
+        // generate a valid tokenID.
+        goto err;
     }
 
-    /* some tokens do not report a serial number */
-    if (p15card->tokeninfo != NULL && p15card->tokeninfo->serial_number != NULL)
-        instanceID = [NSString stringWithUTF8String:p15card->tokeninfo->serial_number];
     p15card->opts.use_pin_cache = 0;
-    
+
     if (self = [super initWithSmartCard:smartCard AID:AID instanceID:instanceID tokenDriver:tokenDriver]) {
         [self.keychainContents fillWithItems:items];
-        
+
         self.ctx = ctx;
         self.card = card;
         self.p15card = p15card;
-    } else {
-        goto err;
+
+        return self;
     }
-    
+
 err:
-    if (!self.p15card && p15card)
-        sc_pkcs15_card_free(p15card);
-    if (!self.card && card)
-        sc_disconnect_card(card);
-    if (!self.ctx && ctx)
-        sc_release_context(ctx);
-    return self;
+    sc_pkcs15_card_free(p15card);
+    sc_disconnect_card(card);
+    sc_release_context(ctx);
+
+    return nil;
 }
 
 - (void)dealloc {
