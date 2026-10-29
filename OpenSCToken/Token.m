@@ -27,6 +27,29 @@
 
 #import "Token.h"
 
+/* Advertise decrypt only when the card can do PKCS#1/OAEP padding itself or
+ * return a complete raw RSA block for software depadding. */
+BOOL OpenSCTokenCardSupportsPaddedRSADecrypt(sc_card_t *card)
+{
+    size_t i;
+
+    if (!card)
+        return NO;
+    if (card->caps & SC_CARD_CAP_RAW_RSA_DECIPHER)
+        return YES;
+
+    for (i = 0; i < card->algorithm_count; i++) {
+        const sc_algorithm_info_t *alg = &card->algorithms[i];
+        if (alg->algorithm != SC_ALGORITHM_RSA)
+            continue;
+        if (alg->flags & (SC_ALGORITHM_RSA_PAD_PKCS1_TYPE_02
+                          | SC_ALGORITHM_RSA_PAD_OAEP))
+            return YES;
+    }
+
+    return NO;
+}
+
 
 @implementation TKTokenKeychainItem(OpenSCDataFormat)
 
@@ -171,9 +194,10 @@
         } else {
             keyItem.canSign = NO;
         }
-        keyItem.suitableForLogin = keyItem.canSign;
         
-        if (USAGE_ANY_DECIPHER & prkey_info->usage) {
+        if (prkey_obj->type == SC_PKCS15_TYPE_PRKEY_RSA
+            && (USAGE_ANY_DECIPHER & prkey_info->usage)
+            && OpenSCTokenCardSupportsPaddedRSADecrypt(card)) {
             keyItem.canDecrypt = YES;
             constraints[@(TKTokenOperationDecryptData)] = constraint;
         } else {
@@ -186,6 +210,10 @@
         } else {
             keyItem.canPerformKeyExchange = NO;
         }
+
+        /* Login uses signing keys for authentication and RSA decryption or
+         * ECDH keys to wrap the Login keychain unlock secret. */
+        keyItem.suitableForLogin = keyItem.canSign || keyItem.canDecrypt || keyItem.canPerformKeyExchange;
 
         keyItem.constraints = constraints;
         [items addObject:keyItem];

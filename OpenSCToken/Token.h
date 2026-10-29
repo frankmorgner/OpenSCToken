@@ -26,6 +26,8 @@
 #define TYPE_PRIV 0x02
 #define TYPE_AUTH 0x03
 
+BOOL OpenSCTokenCardSupportsPaddedRSADecrypt(struct sc_card *card);
+
 static NSData* _Nullable idToData(u8 type, struct sc_pkcs15_id * _Nullable p15id)
 {
     NSData *data = nil;
