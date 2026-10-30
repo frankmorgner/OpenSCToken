@@ -44,7 +44,7 @@ static NSData* _Nullable idToData(u8 type, struct sc_pkcs15_id * _Nullable p15id
 static struct sc_pkcs15_id dataToId(NSData* _Nonnull data)
 {
     struct sc_pkcs15_id p15id;
-    p15id.len = [data length];
+    p15id.len = MIN([data length], sizeof(p15id.value));
     memcpy(p15id.value, [data bytes], p15id.len);
     if (p15id.len > 0) {
         p15id.len--;
