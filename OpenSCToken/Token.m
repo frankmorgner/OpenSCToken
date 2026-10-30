@@ -167,6 +167,8 @@
         if (prkey_obj->auth_id.len == 0) {
             /* true, indicating that the operation is always allowed, without any authentication necessary. */
             constraint = @YES;
+        } else if (prkey_obj->user_consent) {
+            constraint = idToData(TYPE_AUTH_USER_CONSENT, &prkey_obj->auth_id);
         } else {
             /* Any other property list compatible value defined by the implementation of the token extension. Any such constraint is required to stay constant for the entire lifetime of the token. */
             constraint = idToData(TYPE_AUTH, &prkey_obj->auth_id);

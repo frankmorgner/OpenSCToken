@@ -25,6 +25,7 @@
 #define TYPE_CERT 0x01
 #define TYPE_PRIV 0x02
 #define TYPE_AUTH 0x03
+#define TYPE_AUTH_USER_CONSENT 0x04
 
 static NSData* _Nullable idToData(u8 type, struct sc_pkcs15_id * _Nullable p15id)
 {
@@ -53,6 +54,14 @@ static struct sc_pkcs15_id dataToId(NSData* _Nonnull data)
     return p15id;
 }
 
+static u8 dataToType(NSData * _Nonnull data)
+{
+    if ([data length] > 0) {
+        return ((const u8 *)[data bytes])[0];
+    }
+    return 0;
+}
+
 NS_ASSUME_NONNULL_BEGIN
 
 
@@ -67,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithToken:(OpenSCToken *)token;
 @property (readonly) OpenSCToken *OpenSCToken;
-@property BOOL needs_user_consent;
+@property BOOL user_consent_authorized;
 
 @end
 

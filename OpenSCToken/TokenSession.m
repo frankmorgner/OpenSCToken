@@ -250,13 +250,14 @@ static void statusToError(int sc_status, NSError **error)
 
 static BOOL sessionNeedsAuthentication(OpenSCTokenSession *session, struct sc_pkcs15_object *obj)
 {
-    if (session && session.smartCard.sensitive == NO && obj && 0 < obj->auth_id.len) {
-        /* Some cards do not support a logout and CTK doesn't support a card reset. Since we want to enforce a PIN verification even though the key is technically unlocked, we do NOT use sc_pkcs15_get_pin_info() here. */
-        if (obj->user_consent)
-            session.needs_user_consent = YES;
-        else
-            session.needs_user_consent = NO;
-        return YES;
+    if (session && obj && 0 < obj->auth_id.len) {
+        if (obj->user_consent) {
+            if (session.user_consent_authorized)
+                return NO;
+            return YES;
+        }
+
+        return (session.smartCard.sensitive == NO);
     }
 
     return NO;
@@ -282,7 +283,7 @@ static BOOL OpenSCAuthOperationFinishWithError(OpenSCTokenSession *session, NSDa
      * a crypto operation.  Card drivers can test for SC_AC_CONTEXT_SPECIFIC
      * to do any special handling.
      */
-    if (session.needs_user_consent) {
+    if (dataToType(authID) == TYPE_AUTH_USER_CONSENT) {
         int auth_meth_saved;
         struct sc_pkcs15_auth_info *pinfo = (struct sc_pkcs15_auth_info *) pin_obj->data;
 
@@ -298,6 +299,9 @@ err:
     if (SC_SUCCESS != r) {
         os_log_error(OS_LOG_DEFAULT, "Could not verify PIN %s", sc_strerror(r));
         return NO;
+    }
+    if (dataToType(authID) == TYPE_AUTH_USER_CONSENT) {
+        session.user_consent_authorized = YES;
     }
     // Mark card session sensitive, because we entered PIN into it and no session should access it in this state.
     session.smartCard.sensitive = YES;
@@ -527,6 +531,7 @@ err:
         *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeAuthenticationNeeded userInfo:nil];
         return nil;
     }
+    self.user_consent_authorized = NO;
 
     /* Compute output size */
     NSMutableData *out;
@@ -601,6 +606,7 @@ err:
         *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeAuthenticationNeeded userInfo:nil];
         return nil;
     }
+    self.user_consent_authorized = NO;
 
 	unsigned char decrypted[512]; /* FIXME: Will not work for keys above 4096 bits */
 	int r = sc_pkcs15_decipher(self.OpenSCToken.p15card, prkey_obj, algorithmToFlags(algorithm),
@@ -631,6 +637,7 @@ err:
             *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeAuthenticationNeeded userInfo:nil];
         return nil;
     }
+    self.user_consent_authorized = NO;
 
     int flags = 0;
     if (prkey_obj->type == SC_PKCS15_TYPE_PRKEY_EC) {
