@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 53;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -24,6 +24,7 @@
 		190605392189EE57005B78B2 /* CryptoTokenKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 190605372189EE4E005B78B2 /* CryptoTokenKit.framework */; };
 		190ED43A205ADA9B0090562B /* opensc.conf in Resources */ = {isa = PBXBuildFile; fileRef = 190ED439205ADA9B0090562B /* opensc.conf */; };
 		190ED43C205ADAB40090562B /* DESRCACC100001 in Resources */ = {isa = PBXBuildFile; fileRef = 190ED43B205ADAB40090562B /* DESRCACC100001 */; };
+		190ED43E205ADAB40090562B /* DESCHSMCVCA00001 in Resources */ = {isa = PBXBuildFile; fileRef = 190ED43D205ADAB40090562B /* DESCHSMCVCA00001 */; };
 		191FFFCE1FA7204B009E9DC4 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 191FFFCD1FA7204B009E9DC4 /* libz.tbd */; };
 		19AEACA5218A68E9001B2CBF /* pkcs15-init in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEAC8F218A68E8001B2CBF /* pkcs15-init */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		19AEACA6218A68E9001B2CBF /* pkcs15-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEAC90218A68E8001B2CBF /* pkcs15-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -46,6 +47,12 @@
 		19AEACB8218A68E9001B2CBF /* opensc-asn1 in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEACA2218A68E9001B2CBF /* opensc-asn1 */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		19AEACB9218A68E9001B2CBF /* opensc-explorer in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEACA3218A68E9001B2CBF /* opensc-explorer */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		19AEACBA218A68E9001B2CBF /* opensc-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEACA4218A68E9001B2CBF /* opensc-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACC2218A68E9001B2CBF /* ctk-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEACBB218A68E9001B2CBF /* ctk-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACC3218A68E9001B2CBF /* goid-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEACBC218A68E9001B2CBF /* goid-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACC4218A68E9001B2CBF /* dtrust-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEACBD218A68E9001B2CBF /* dtrust-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACC5218A68E9001B2CBF /* lteid-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEACBE218A68E9001B2CBF /* lteid-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACC6218A68E9001B2CBF /* cedulauy-tool in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEACBF218A68E9001B2CBF /* cedulauy-tool */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		19AEACC7218A68E9001B2CBF /* pkcs11-register in Embed OpenSC Tools */ = {isa = PBXBuildFile; fileRef = 19AEACC0218A68E9001B2CBF /* pkcs11-register */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		2F38839D1CF46C6E00F114A7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F38839C1CF46C6E00F114A7 /* AppDelegate.m */; };
 		2F3883A01CF46C6E00F114A7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 2F38839F1CF46C6E00F114A7 /* main.m */; };
 		2F3883A21CF46C6E00F114A7 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2F3883A11CF46C6E00F114A7 /* Assets.xcassets */; };
@@ -109,6 +116,12 @@
 				19AEACB8218A68E9001B2CBF /* opensc-asn1 in Embed OpenSC Tools */,
 				19AEACB9218A68E9001B2CBF /* opensc-explorer in Embed OpenSC Tools */,
 				19AEACBA218A68E9001B2CBF /* opensc-tool in Embed OpenSC Tools */,
+				19AEACC2218A68E9001B2CBF /* ctk-tool in Embed OpenSC Tools */,
+				19AEACC3218A68E9001B2CBF /* goid-tool in Embed OpenSC Tools */,
+				19AEACC4218A68E9001B2CBF /* dtrust-tool in Embed OpenSC Tools */,
+				19AEACC5218A68E9001B2CBF /* lteid-tool in Embed OpenSC Tools */,
+				19AEACC6218A68E9001B2CBF /* cedulauy-tool in Embed OpenSC Tools */,
+				19AEACC7218A68E9001B2CBF /* pkcs11-register in Embed OpenSC Tools */,
 			);
 			name = "Embed OpenSC Tools";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -144,6 +157,7 @@
 		190605372189EE4E005B78B2 /* CryptoTokenKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CryptoTokenKit.framework; path = System/Library/Frameworks/CryptoTokenKit.framework; sourceTree = SDKROOT; };
 		190ED439205ADA9B0090562B /* opensc.conf */ = {isa = PBXFileReference; lastKnownFileType = text; name = opensc.conf; path = OpenSC/etc/opensc.conf; sourceTree = "<group>"; };
 		190ED43B205ADAB40090562B /* DESRCACC100001 */ = {isa = PBXFileReference; lastKnownFileType = file; name = DESRCACC100001; path = OpenSC/etc/DESRCACC100001; sourceTree = "<group>"; };
+		190ED43D205ADAB40090562B /* DESCHSMCVCA00001 */ = {isa = PBXFileReference; lastKnownFileType = file; name = DESCHSMCVCA00001; path = OpenSC/etc/DESCHSMCVCA00001; sourceTree = "<group>"; };
 		191FFFCD1FA7204B009E9DC4 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		19AEAC8F218A68E8001B2CBF /* pkcs15-init */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "pkcs15-init"; path = "OpenSC/src/tools/pkcs15-init"; sourceTree = "<group>"; };
 		19AEAC90218A68E8001B2CBF /* pkcs15-tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "pkcs15-tool"; path = "OpenSC/src/tools/pkcs15-tool"; sourceTree = "<group>"; };
@@ -166,6 +180,12 @@
 		19AEACA2218A68E9001B2CBF /* opensc-asn1 */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "opensc-asn1"; path = "OpenSC/src/tools/opensc-asn1"; sourceTree = "<group>"; };
 		19AEACA3218A68E9001B2CBF /* opensc-explorer */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "opensc-explorer"; path = "OpenSC/src/tools/opensc-explorer"; sourceTree = "<group>"; };
 		19AEACA4218A68E9001B2CBF /* opensc-tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "opensc-tool"; path = "OpenSC/src/tools/opensc-tool"; sourceTree = "<group>"; };
+		19AEACBB218A68E9001B2CBF /* ctk-tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "ctk-tool"; path = "OpenSC/src/tools/ctk-tool"; sourceTree = "<group>"; };
+		19AEACBC218A68E9001B2CBF /* goid-tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "goid-tool"; path = "OpenSC/src/tools/goid-tool"; sourceTree = "<group>"; };
+		19AEACBD218A68E9001B2CBF /* dtrust-tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "dtrust-tool"; path = "OpenSC/src/tools/dtrust-tool"; sourceTree = "<group>"; };
+		19AEACBE218A68E9001B2CBF /* lteid-tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "lteid-tool"; path = "OpenSC/src/tools/lteid-tool"; sourceTree = "<group>"; };
+		19AEACBF218A68E9001B2CBF /* cedulauy-tool */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "cedulauy-tool"; path = "OpenSC/src/tools/cedulauy-tool"; sourceTree = "<group>"; };
+		19AEACC0218A68E9001B2CBF /* pkcs11-register */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; name = "pkcs11-register"; path = "OpenSC/src/tools/pkcs11-register"; sourceTree = "<group>"; };
 		2F3883981CF46C6E00F114A7 /* OpenSCTokenApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OpenSCTokenApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2F38839B1CF46C6E00F114A7 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		2F38839C1CF46C6E00F114A7 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -240,12 +260,17 @@
 			isa = PBXGroup;
 			children = (
 				19AEACA0218A68E9001B2CBF /* cardos-tool */,
+				19AEACBF218A68E9001B2CBF /* cedulauy-tool */,
 				19AEAC9A218A68E9001B2CBF /* cryptoflex-tool */,
+				19AEACBB218A68E9001B2CBF /* ctk-tool */,
 				19AEAC9C218A68E9001B2CBF /* dnie-tool */,
+				19AEACBD218A68E9001B2CBF /* dtrust-tool */,
 				19AEAC98218A68E8001B2CBF /* egk-tool */,
 				19AEAC92218A68E8001B2CBF /* eidenv */,
 				19AEACA1218A68E9001B2CBF /* gids-tool */,
+				19AEACBC218A68E9001B2CBF /* goid-tool */,
 				19AEAC95218A68E8001B2CBF /* iasecc-tool */,
+				19AEACBE218A68E9001B2CBF /* lteid-tool */,
 				19AEAC93218A68E8001B2CBF /* netkey-tool */,
 				19AEAC97218A68E8001B2CBF /* npa-tool */,
 				19AEAC96218A68E8001B2CBF /* openpgp-tool */,
@@ -254,12 +279,14 @@
 				19AEAC94218A68E8001B2CBF /* opensc-notify */,
 				19AEACA4218A68E9001B2CBF /* opensc-tool */,
 				19AEAC99218A68E8001B2CBF /* piv-tool */,
+				19AEACC0218A68E9001B2CBF /* pkcs11-register */,
 				19AEAC9E218A68E9001B2CBF /* pkcs11-tool */,
 				19AEAC9F218A68E9001B2CBF /* pkcs15-crypt */,
 				19AEAC8F218A68E8001B2CBF /* pkcs15-init */,
 				19AEAC90218A68E8001B2CBF /* pkcs15-tool */,
 				19AEAC9D218A68E9001B2CBF /* sc-hsm-tool */,
 				19AEAC91218A68E8001B2CBF /* westcos-tool */,
+				190ED43D205ADAB40090562B /* DESCHSMCVCA00001 */,
 				190ED43B205ADAB40090562B /* DESRCACC100001 */,
 				190ED439205ADA9B0090562B /* opensc.conf */,
 				2F3883CB1CF46FA300F114A7 /* README.md */,
@@ -472,6 +499,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				190ED43E205ADAB40090562B /* DESCHSMCVCA00001 in Resources */,
 				190ED43C205ADAB40090562B /* DESRCACC100001 in Resources */,
 				190ED43A205ADA9B0090562B /* opensc.conf in Resources */,
 			);
