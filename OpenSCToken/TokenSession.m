@@ -251,13 +251,15 @@ static void statusToError(int sc_status, NSError **error)
 static BOOL sessionNeedsAuthentication(OpenSCTokenSession *session, struct sc_pkcs15_object *obj)
 {
     if (session && obj && 0 < obj->auth_id.len) {
-        if (obj->user_consent) {
-            if (session.user_consent_authorized)
-                return NO;
-            return YES;
+        if (session.smartCard.sensitive == NO) {
+            [session.satisfied_constraints removeAllObjects];
         }
 
-        return (session.smartCard.sensitive == NO);
+        u8 type = obj->user_consent ? TYPE_AUTH_USER_CONSENT : TYPE_AUTH;
+        NSData *constraint = idToData(type, &obj->auth_id);
+        if (constraint) {
+            return ![session.satisfied_constraints containsObject:constraint];
+        }
     }
 
     return NO;
@@ -300,9 +302,7 @@ err:
         os_log_error(OS_LOG_DEFAULT, "Could not verify PIN %s", sc_strerror(r));
         return NO;
     }
-    if (dataToType(authID) == TYPE_AUTH_USER_CONSENT) {
-        session.user_consent_authorized = YES;
-    }
+    [session.satisfied_constraints addObject:authID];
     // Mark card session sensitive, because we entered PIN into it and no session should access it in this state.
     session.smartCard.sensitive = YES;
 
@@ -380,6 +380,7 @@ err:
 - (instancetype)initWithToken:(OpenSCToken *)token {
     if (self = [super initWithToken:token]) {
         _OpenSCToken = token;
+        _satisfied_constraints = [NSMutableSet set];
     }
     return self;
 }
@@ -531,7 +532,12 @@ err:
         *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeAuthenticationNeeded userInfo:nil];
         return nil;
     }
-    self.user_consent_authorized = NO;
+    if (prkey_obj->user_consent) {
+        NSData *constraint = idToData(TYPE_AUTH_USER_CONSENT, &prkey_obj->auth_id);
+        if (constraint) {
+            [self.satisfied_constraints removeObject:constraint];
+        }
+    }
 
     /* Compute output size */
     NSMutableData *out;
@@ -606,7 +612,12 @@ err:
         *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeAuthenticationNeeded userInfo:nil];
         return nil;
     }
-    self.user_consent_authorized = NO;
+    if (prkey_obj->user_consent) {
+        NSData *constraint = idToData(TYPE_AUTH_USER_CONSENT, &prkey_obj->auth_id);
+        if (constraint) {
+            [self.satisfied_constraints removeObject:constraint];
+        }
+    }
 
 	unsigned char decrypted[512]; /* FIXME: Will not work for keys above 4096 bits */
 	int r = sc_pkcs15_decipher(self.OpenSCToken.p15card, prkey_obj, algorithmToFlags(algorithm),
@@ -637,7 +648,12 @@ err:
             *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeAuthenticationNeeded userInfo:nil];
         return nil;
     }
-    self.user_consent_authorized = NO;
+    if (prkey_obj->user_consent) {
+        NSData *constraint = idToData(TYPE_AUTH_USER_CONSENT, &prkey_obj->auth_id);
+        if (constraint) {
+            [self.satisfied_constraints removeObject:constraint];
+        }
+    }
 
     int flags = 0;
     if (prkey_obj->type == SC_PKCS15_TYPE_PRKEY_EC) {
