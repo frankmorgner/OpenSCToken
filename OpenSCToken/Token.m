@@ -16,9 +16,9 @@
  * You should have received a copy of the GNU General Public License along with
  * OpenSCToken.  If not, see <http://www.gnu.org/licenses/>.
  */
-@import os.log;
-@import Foundation;
-@import CryptoTokenKit;
+#import <os/log.h>
+#import <Foundation/Foundation.h>
+#import <CryptoTokenKit/CryptoTokenKit.h>
 
 #include "libopensc/log.h"
 #include "libopensc/pkcs15.h"

@@ -16,8 +16,8 @@
  * You should have received a copy of the GNU General Public License along with
  * OpenSCToken.  If not, see <http://www.gnu.org/licenses/>.
  */
-@import Foundation;
-@import CryptoTokenKit;
+#import <Foundation/Foundation.h>
+#import <CryptoTokenKit/CryptoTokenKit.h>
 
 #import "Token.h"
 

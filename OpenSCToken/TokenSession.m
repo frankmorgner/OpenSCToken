@@ -300,6 +300,7 @@ static BOOL OpenSCAuthOperationFinishWithError(OpenSCTokenSession *session, NSDa
 err:
     if (SC_SUCCESS != r) {
         os_log_error(OS_LOG_DEFAULT, "Could not verify PIN %s", sc_strerror(r));
+        statusToError(r, error);
         return NO;
     }
     [session.satisfied_constraints addObject:authID];
