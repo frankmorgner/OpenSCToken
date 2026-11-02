@@ -48,7 +48,7 @@ static unsigned int algorithmToFlags(TKTokenKeyAlgorithm * algorithm)
     if ([algorithm isAlgorithm:kSecKeyAlgorithmRSAEncryptionRaw]
         || [algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureRaw])
         return SC_ALGORITHM_RSA_RAW;
-    
+
     /* Needed by cards without raw RSA, e.g. Spanish DNIe */
     if ([algorithm isAlgorithm:kSecKeyAlgorithmRSASignatureDigestPKCS1v15Raw])
         return SC_ALGORITHM_RSA_PAD_PKCS1_TYPE_01 | SC_ALGORITHM_RSA_HASH_NONE;
@@ -266,48 +266,49 @@ static BOOL sessionNeedsAuthentication(OpenSCTokenSession *session, struct sc_pk
 }
 
 static BOOL OpenSCAuthOperationFinishWithError(OpenSCTokenSession *session, NSData *authID, NSString *PIN, NSError **error) {
-    
-    struct sc_pkcs15_object *pin_obj = NULL;
-    struct sc_pkcs15_id p15id = dataToId(authID);
-    int r = sc_pkcs15_find_pin_by_auth_id(session.OpenSCToken.p15card, &p15id, &pin_obj);
-    LOG_TEST_GOTO_ERR(session.OpenSCToken.ctx, r, "Could not find PIN object");
-    
-    const char *pin = NULL;
-    size_t pin_len = 0;
-    if (PIN) {
-        pin = [PIN UTF8String];
-        pin_len = strlen(pin);
-    }
+    @synchronized (session.OpenSCToken) {
+        struct sc_pkcs15_object *pin_obj = NULL;
+        struct sc_pkcs15_id p15id = dataToId(authID);
+        int r = sc_pkcs15_find_pin_by_auth_id(session.OpenSCToken.p15card, &p15id, &pin_obj);
+        LOG_TEST_GOTO_ERR(session.OpenSCToken.ctx, r, "Could not find PIN object");
 
-    /*
-     * Do what PKCS#11 would do for keys requiring CKA_ALWAYS_AUTHENTICATE
-     * and CKU_CONTEXT_SPECIFIC login to let driver know this verify will be followed by
-     * a crypto operation.  Card drivers can test for SC_AC_CONTEXT_SPECIFIC
-     * to do any special handling.
-     */
-    if (dataToType(authID) == TYPE_AUTH_USER_CONSENT) {
-        int auth_meth_saved;
-        struct sc_pkcs15_auth_info *pinfo = (struct sc_pkcs15_auth_info *) pin_obj->data;
+        const char *pin = NULL;
+        size_t pin_len = 0;
+        if (PIN) {
+            pin = [PIN UTF8String];
+            pin_len = strlen(pin);
+        }
 
-        auth_meth_saved = pinfo->auth_method;
+        /*
+         * Do what PKCS#11 would do for keys requiring CKA_ALWAYS_AUTHENTICATE
+         * and CKU_CONTEXT_SPECIFIC login to let driver know this verify will be followed by
+         * a crypto operation.  Card drivers can test for SC_AC_CONTEXT_SPECIFIC
+         * to do any special handling.
+         */
+        if (dataToType(authID) == TYPE_AUTH_USER_CONSENT) {
+            int auth_meth_saved;
+            struct sc_pkcs15_auth_info *pinfo = (struct sc_pkcs15_auth_info *) pin_obj->data;
 
-        pinfo->auth_method = SC_AC_CONTEXT_SPECIFIC;
-        r = sc_pkcs15_verify_pin(session.OpenSCToken.p15card, pin_obj, (const unsigned char *) pin, pin_len);
-        pinfo->auth_method = auth_meth_saved;
-    } else
-        r = sc_pkcs15_verify_pin(session.OpenSCToken.p15card, pin_obj, (const unsigned char *) pin, pin_len);
-    
+            auth_meth_saved = pinfo->auth_method;
+
+            pinfo->auth_method = SC_AC_CONTEXT_SPECIFIC;
+            r = sc_pkcs15_verify_pin(session.OpenSCToken.p15card, pin_obj, (const unsigned char *) pin, pin_len);
+            pinfo->auth_method = auth_meth_saved;
+        } else
+            r = sc_pkcs15_verify_pin(session.OpenSCToken.p15card, pin_obj, (const unsigned char *) pin, pin_len);
+
 err:
-    if (SC_SUCCESS != r) {
-        os_log_error(OS_LOG_DEFAULT, "Could not verify PIN %s", sc_strerror(r));
-        statusToError(r, error);
-        return NO;
-    }
-    [session.satisfied_constraints addObject:authID];
-    // Mark card session sensitive, because we entered PIN into it and no session should access it in this state.
-    session.smartCard.sensitive = YES;
+        if (SC_SUCCESS != r) {
+            os_log_error(OS_LOG_DEFAULT, "Could not verify PIN %s", sc_strerror(r));
+            statusToError(r, error);
+            return NO;
+        }
+        [session.satisfied_constraints addObject:authID];
+        // Mark card session sensitive, because we entered PIN into it and no session should access it in this state.
+        session.smartCard.sensitive = YES;
 
-    return YES;
+        return YES;
+    }
 }
 
 @implementation OpenSCAuthOperation
@@ -366,7 +367,7 @@ err:
         _session = session;
         _authID = authID;
     }
-    
+
     return self;
 }
 
@@ -407,7 +408,7 @@ err:
 
     if (SC_SUCCESS != sc_pkcs15_find_prkey_by_id(self.OpenSCToken.p15card, &p15id, &prkey_obj))
         return NO;
-    
+
     struct sc_pkcs15_prkey_info *prkey_info = (struct sc_pkcs15_prkey_info *) prkey_obj->data;
     switch (operation) {
         case TKTokenOperationSignData:
@@ -425,7 +426,7 @@ err:
         default:
             return NO;
     }
-    
+
     unsigned long ec_ext_flags = 0;
     int rsa_flags = 0, ec_flags = 0;
     /* For now, we just OR all the algorithm specific
@@ -514,175 +515,183 @@ err:
      * pkcs15_prkey_can_do() in src/pkcs11/framework-pkcs15.c
      * TODO add more of the supported signature schemes (PSS/OAEP/PKCS1)
      */
-    
+
     sc_log(self.OpenSCToken.ctx, "Algorithm is supported.");
 
     return YES;
 }
 
 - (NSData *)tokenSession:(TKTokenSession *)session signData:(NSData *)dataToSign usingKey:(TKTokenObjectID)keyObjectID algorithm:(TKTokenKeyAlgorithm *)algorithm error:(NSError * _Nullable __autoreleasing *)error {
-    sc_log(self.OpenSCToken.ctx, "Performing %s with key %s", algorithm.description.UTF8String, sc_dump_hex([keyObjectID bytes], [keyObjectID length]));
-    sc_log_hex(self.OpenSCToken.ctx, "data to sign", [dataToSign bytes], [dataToSign length]);
+    @synchronized (self.OpenSCToken) {
+        sc_log(self.OpenSCToken.ctx, "Performing %s with key %s", algorithm.description.UTF8String, sc_dump_hex([keyObjectID bytes], [keyObjectID length]));
+        sc_log_hex(self.OpenSCToken.ctx, "data to sign", [dataToSign bytes], [dataToSign length]);
 
-    struct sc_pkcs15_id p15id = dataToId(keyObjectID);
-    struct sc_pkcs15_object *prkey_obj = NULL;
-    if (SC_SUCCESS != sc_pkcs15_find_prkey_by_id(self.OpenSCToken.p15card, &p15id, &prkey_obj))
-        return nil;
-
-    if (sessionNeedsAuthentication(self, prkey_obj)) {
-        *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeAuthenticationNeeded userInfo:nil];
-        return nil;
-    }
-    if (prkey_obj->user_consent) {
-        NSData *constraint = idToData(TYPE_AUTH_USER_CONSENT, &prkey_obj->auth_id);
-        if (constraint) {
-            [self.satisfied_constraints removeObject:constraint];
-        }
-    }
-
-    /* Compute output size */
-    NSMutableData *out;
-    struct sc_pkcs15_prkey_info *prkey_info = (struct sc_pkcs15_prkey_info *) prkey_obj->data;
-    switch (prkey_obj->type) {
-        case SC_PKCS15_TYPE_PRKEY_RSA:
-            out = [NSMutableData dataWithLength:prkey_info->modulus_length / 8];
-            break;
-        case SC_PKCS15_TYPE_PRKEY_EC:
-            switch(prkey_info->field_length) {
-                case 256:
-                    /* ECDSA_P256 */
-                    out = [NSMutableData dataWithLength:256 / 8 * 2];
-                    break;
-                case 384:
-                    /* ECDSA_P384 */
-                    out = [NSMutableData dataWithLength:384 / 8 * 2];
-                    break;
-                case 512:
-                    /* ECDSA_P512 special case !!! */
-                    out = [NSMutableData dataWithLength:132];
-                    break;
-                default:
-                    return nil;
-            }
-            break;
-        default:
+        struct sc_pkcs15_id p15id = dataToId(keyObjectID);
+        struct sc_pkcs15_object *prkey_obj = NULL;
+        if (SC_SUCCESS != sc_pkcs15_find_prkey_by_id(self.OpenSCToken.p15card, &p15id, &prkey_obj))
             return nil;
-    }
-    int r = sc_pkcs15_compute_signature(self.OpenSCToken.p15card, prkey_obj, algorithmToFlags(algorithm), [dataToSign bytes], [dataToSign length], (unsigned char *) [out bytes], [out length], NULL);
 
-    if (0 > r) {
-        statusToError(r, error);
-        return nil;
-    }
-    [out setLength:(size_t) r];
-    
-    if (prkey_obj->type == SC_PKCS15_TYPE_PRKEY_EC) {
-        SecAsn1CoderRef asn1Coder;
-        SecAsn1CoderCreate(&asn1Coder);
-        
-        SecAsn1Item derOut = {0, nil};
-        uint8 *outBytes = (uint8*)[out bytes];
-        RawECDSASignature rawECDSASignature = {
-            { [out length] / 2, outBytes },
-            { [out length] / 2, outBytes + ([out length] / 2) },
-        };
-        
-        OSStatus ret = SecAsn1EncodeItem(asn1Coder, &rawECDSASignature, DerECDSASignatureTemplate, &derOut);
-        if (ret == errSecSuccess) {
-            out = [NSMutableData dataWithBytes:derOut.Data length:derOut.Length];
+        if (sessionNeedsAuthentication(self, prkey_obj)) {
+            *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeAuthenticationNeeded userInfo:nil];
+            return nil;
         }
-        else {
-            out = nil;
+        if (prkey_obj->user_consent) {
+            NSData *constraint = idToData(TYPE_AUTH_USER_CONSENT, &prkey_obj->auth_id);
+            if (constraint) {
+                [self.satisfied_constraints removeObject:constraint];
+            }
         }
-        SecAsn1CoderRelease(asn1Coder);
+
+        /* Compute output size */
+        NSMutableData *out;
+        struct sc_pkcs15_prkey_info *prkey_info = (struct sc_pkcs15_prkey_info *) prkey_obj->data;
+        switch (prkey_obj->type) {
+            case SC_PKCS15_TYPE_PRKEY_RSA:
+                out = [NSMutableData dataWithLength:prkey_info->modulus_length / 8];
+                break;
+            case SC_PKCS15_TYPE_PRKEY_EC:
+                switch(prkey_info->field_length) {
+                    case 256:
+                        /* ECDSA_P256 */
+                        out = [NSMutableData dataWithLength:256 / 8 * 2];
+                        break;
+                    case 384:
+                        /* ECDSA_P384 */
+                        out = [NSMutableData dataWithLength:384 / 8 * 2];
+                        break;
+                    case 512:
+                        /* ECDSA_P512 special case !!! */
+                        out = [NSMutableData dataWithLength:132];
+                        break;
+                    default:
+                        return nil;
+                }
+                break;
+            default:
+                return nil;
+        }
+        int r = sc_pkcs15_compute_signature(self.OpenSCToken.p15card, prkey_obj, algorithmToFlags(algorithm), [dataToSign bytes], [dataToSign length], (unsigned char *) [out bytes], [out length], NULL);
+
+        if (0 > r) {
+            statusToError(r, error);
+            return nil;
+        }
+        [out setLength:(size_t) r];
+
+        if (prkey_obj->type == SC_PKCS15_TYPE_PRKEY_EC) {
+            SecAsn1CoderRef asn1Coder;
+            SecAsn1CoderCreate(&asn1Coder);
+
+            SecAsn1Item derOut = {0, nil};
+            uint8 *outBytes = (uint8*)[out bytes];
+            RawECDSASignature rawECDSASignature = {
+                { [out length] / 2, outBytes },
+                { [out length] / 2, outBytes + ([out length] / 2) },
+            };
+
+            OSStatus ret = SecAsn1EncodeItem(asn1Coder, &rawECDSASignature, DerECDSASignatureTemplate, &derOut);
+            if (ret == errSecSuccess) {
+                out = [NSMutableData dataWithBytes:derOut.Data length:derOut.Length];
+            }
+            else {
+                out = nil;
+            }
+            SecAsn1CoderRelease(asn1Coder);
+        }
+
+        return out;
     }
-    
-    return out;
 }
 
 - (NSData *)tokenSession:(TKTokenSession *)session decryptData:(NSData *)ciphertext usingKey:(TKTokenObjectID)keyObjectID algorithm:(TKTokenKeyAlgorithm *)algorithm error:(NSError * _Nullable __autoreleasing *)error {
-    sc_log(self.OpenSCToken.ctx, "Performing %s with key %s", algorithm.description.UTF8String, sc_dump_hex([keyObjectID bytes], [keyObjectID length]));
-    sc_log_hex(self.OpenSCToken.ctx, "cipher text", [ciphertext bytes], [ciphertext length]);
+    @synchronized (self.OpenSCToken) {
+        sc_log(self.OpenSCToken.ctx, "Performing %s with key %s", algorithm.description.UTF8String, sc_dump_hex([keyObjectID bytes], [keyObjectID length]));
+        sc_log_hex(self.OpenSCToken.ctx, "cipher text", [ciphertext bytes], [ciphertext length]);
 
-    struct sc_pkcs15_id p15id = dataToId(keyObjectID);
-    struct sc_pkcs15_object *prkey_obj = NULL;
-    if (SC_SUCCESS != sc_pkcs15_find_prkey_by_id(self.OpenSCToken.p15card, &p15id, &prkey_obj))
-        return nil;
-    
-    if (sessionNeedsAuthentication(self, prkey_obj)) {
-        *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeAuthenticationNeeded userInfo:nil];
-        return nil;
-    }
-    if (prkey_obj->user_consent) {
-        NSData *constraint = idToData(TYPE_AUTH_USER_CONSENT, &prkey_obj->auth_id);
-        if (constraint) {
-            [self.satisfied_constraints removeObject:constraint];
+        struct sc_pkcs15_id p15id = dataToId(keyObjectID);
+        struct sc_pkcs15_object *prkey_obj = NULL;
+        if (SC_SUCCESS != sc_pkcs15_find_prkey_by_id(self.OpenSCToken.p15card, &p15id, &prkey_obj))
+            return nil;
+
+        if (sessionNeedsAuthentication(self, prkey_obj)) {
+            *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeAuthenticationNeeded userInfo:nil];
+            return nil;
         }
-    }
+        if (prkey_obj->user_consent) {
+            NSData *constraint = idToData(TYPE_AUTH_USER_CONSENT, &prkey_obj->auth_id);
+            if (constraint) {
+                [self.satisfied_constraints removeObject:constraint];
+            }
+        }
 
-	unsigned char decrypted[512]; /* FIXME: Will not work for keys above 4096 bits */
-	int r = sc_pkcs15_decipher(self.OpenSCToken.p15card, prkey_obj, algorithmToFlags(algorithm),
-			[ciphertext bytes], [ciphertext length], decrypted, sizeof(decrypted), NULL);
-    if (0 > r) {
-        statusToError(r, error);
-        return nil;
-    }
+        unsigned char decrypted[512]; /* FIXME: Will not work for keys above 4096 bits */
+        int r = sc_pkcs15_decipher(self.OpenSCToken.p15card, prkey_obj, algorithmToFlags(algorithm),
+                [ciphertext bytes], [ciphertext length], decrypted, sizeof(decrypted), NULL);
+        if (0 > r) {
+            statusToError(r, error);
+            return nil;
+        }
 
-    return [NSData dataWithBytes:decrypted length:(size_t) r];
+        return [NSData dataWithBytes:decrypted length:(size_t) r];
+    }
 }
 
 - (NSData *)tokenSession:(TKTokenSession *)session performKeyExchangeWithPublicKey:(NSData *)otherPartyPublicKeyData usingKey:(TKTokenObjectID)keyObjectID algorithm:(TKTokenKeyAlgorithm *)algorithm parameters:(TKTokenKeyExchangeParameters *)parameters error:(NSError * _Nullable __autoreleasing *)error {
-    sc_log(self.OpenSCToken.ctx, "Performing %s with key %s", algorithm.description.UTF8String, sc_dump_hex([keyObjectID bytes], [keyObjectID length]));
-    sc_log_hex(self.OpenSCToken.ctx, "other party public key", [otherPartyPublicKeyData bytes], [otherPartyPublicKeyData length]);
+    @synchronized (self.OpenSCToken) {
+        sc_log(self.OpenSCToken.ctx, "Performing %s with key %s", algorithm.description.UTF8String, sc_dump_hex([keyObjectID bytes], [keyObjectID length]));
+        sc_log_hex(self.OpenSCToken.ctx, "other party public key", [otherPartyPublicKeyData bytes], [otherPartyPublicKeyData length]);
 
-    struct sc_pkcs15_id p15id = dataToId(keyObjectID);
-    struct sc_pkcs15_object *prkey_obj = NULL;
-    
-    if (SC_SUCCESS != sc_pkcs15_find_prkey_by_id(self.OpenSCToken.p15card, &p15id, &prkey_obj)) {
-        if (error)
-            *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeObjectNotFound userInfo:nil];
-        return nil;
-    }
-    
-    if (sessionNeedsAuthentication(self, prkey_obj)) {
-        if (error)
-            *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeAuthenticationNeeded userInfo:nil];
-        return nil;
-    }
-    if (prkey_obj->user_consent) {
-        NSData *constraint = idToData(TYPE_AUTH_USER_CONSENT, &prkey_obj->auth_id);
-        if (constraint) {
-            [self.satisfied_constraints removeObject:constraint];
+        struct sc_pkcs15_id p15id = dataToId(keyObjectID);
+        struct sc_pkcs15_object *prkey_obj = NULL;
+
+        if (SC_SUCCESS != sc_pkcs15_find_prkey_by_id(self.OpenSCToken.p15card, &p15id, &prkey_obj)) {
+            if (error)
+                *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeObjectNotFound userInfo:nil];
+            return nil;
         }
-    }
 
-    int flags = 0;
-    if (prkey_obj->type == SC_PKCS15_TYPE_PRKEY_EC) {
-        flags = SC_ALGORITHM_ECDH_CDH_RAW;
-    } else {
-        if (error)
-            *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeBadParameter userInfo:nil];
-        return nil;
-    }
+        if (sessionNeedsAuthentication(self, prkey_obj)) {
+            if (error)
+                *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeAuthenticationNeeded userInfo:nil];
+            return nil;
+        }
+        if (prkey_obj->user_consent) {
+            NSData *constraint = idToData(TYPE_AUTH_USER_CONSENT, &prkey_obj->auth_id);
+            if (constraint) {
+                [self.satisfied_constraints removeObject:constraint];
+            }
+        }
 
-    unsigned char out_buf[256];
-    size_t out_len = sizeof(out_buf);
-    int r = sc_pkcs15_derive(self.OpenSCToken.p15card, prkey_obj, flags,
-            [otherPartyPublicKeyData bytes], [otherPartyPublicKeyData length],
-            out_buf, &out_len);
-    if (r < 0) {
-        statusToError(r, error);
-        return nil;
-    }
+        int flags = 0;
+        if (prkey_obj->type == SC_PKCS15_TYPE_PRKEY_EC) {
+            flags = SC_ALGORITHM_ECDH_CDH_RAW;
+        } else {
+            if (error)
+                *error = [NSError errorWithDomain:TKErrorDomain code:TKErrorCodeBadParameter userInfo:nil];
+            return nil;
+        }
 
-    return [NSData dataWithBytes:out_buf length:out_len];
+        unsigned char out_buf[256];
+        size_t out_len = sizeof(out_buf);
+        int r = sc_pkcs15_derive(self.OpenSCToken.p15card, prkey_obj, flags,
+                [otherPartyPublicKeyData bytes], [otherPartyPublicKeyData length],
+                out_buf, &out_len);
+        if (r < 0) {
+            statusToError(r, error);
+            return nil;
+        }
+
+        return [NSData dataWithBytes:out_buf length:out_len];
+    }
 }
 
 - (void)dealloc {
     /* logout to avoid the authentication to be misused */
-    if (self.smartCard.sensitive) {
-        if (SC_SUCCESS == sc_logout(self.OpenSCToken.card))
-            self.smartCard.sensitive = NO;
+    @synchronized (self.OpenSCToken) {
+        if (self.smartCard.sensitive) {
+            if (SC_SUCCESS == sc_logout(self.OpenSCToken.card))
+                self.smartCard.sensitive = NO;
+        }
     }
 }
 
