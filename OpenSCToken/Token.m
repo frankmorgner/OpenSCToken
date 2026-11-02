@@ -240,12 +240,14 @@ err:
 }
 
 - (void)dealloc {
-    sc_pkcs15_card_free(self.p15card);
-    sc_disconnect_card(self.card);
-    sc_release_context(self.ctx);
-    self.card = NULL;
-    self.p15card = NULL;
-    self.ctx = NULL;
+    @synchronized (self) {
+        sc_pkcs15_card_free(self.p15card);
+        sc_disconnect_card(self.card);
+        sc_release_context(self.ctx);
+        self.card = NULL;
+        self.p15card = NULL;
+        self.ctx = NULL;
+    }
 }
 
 
